@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  web_feedback:
+    build:
+      context: .
+      args:
+        - PIP_UPGRADE=true
+        - INSTALL_FLASK=true
+    container_name: flaskapi_feedback
+    image: feedback:1.0
+    volumes:
+      - ./feedback:/app/feedback
+    command: python3 main.py
+    ports:
+      - 5000:5000
+    restart: always
