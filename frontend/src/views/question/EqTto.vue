@@ -1,10 +1,10 @@
 <template>
-  <v-container class="grey lighten-5">
+  <v-container class="grey lighten-5" fluid>
     <v-row justify="center" align="center">
       <v-col>
         <v-card justify="center" align="center">
           <v-card-title>
-            Demo EQ Test
+            EQ TTO Demo
             <v-spacer></v-spacer>
             <span color="grey">总共用时： {{usedTime}}</span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -12,27 +12,38 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text v-if="slide === 1">
-            <v-row>
+            <v-row v-if="showDetail">
               <v-col>
-                <span class="display-1">当前SLIDE： {{ slide }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前Direction： {{ stepDirection }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">重置次数： {{ resets }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前步骤：{{step}}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前步骤B：{{stepB}}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前年A： {{ currentYear }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前年B： {{ currentYearB }}</span>
+                <span class="display-0">当前SLIDE： {{ slide }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前Direction： {{ stepDirection }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >重置次数： {{ resets }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="display-0">当前步骤：{{step}}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前步骤B：{{stepB}}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前年A： {{ currentYear }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前年B： {{ currentYearB }}</span>
               </v-col>
             </v-row>
             <v-row justify="center" align="center">
               <v-col>
                 <div>
-                  <canvas id="canvas1" ref="canvas1" height="100px"></canvas>
+                  <div :style="cStyle1">{{currentYear}}</div>
+                  <canvas id="canvas1" ref="canvas1"></canvas>
                 </div>
                 <table border="1" cellspacing="0" cellpadding="0" ref="table1">
                   <tr style="height: 50px">
@@ -59,35 +70,45 @@
                   </tr>
                 </table>
                 <div>
-                  <canvas id="canvas2" ref="canvas2" height="100px"></canvas>
+                  <canvas id="canvas2" ref="canvas2"></canvas>
                 </div>
               </v-col>
             </v-row>
           </v-card-text>
 
           <v-card-text v-if="slide === 2">
-            <v-row>
+            <v-row v-if="showDetail">
               <v-col>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前SLIDE： {{ slide }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前Direction： {{ stepDirection }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">重置次数： {{ resets }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前步骤：{{step}}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前步骤B：{{stepB}}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前年A： {{ currentYear }}</span>
-                <v-spacer></v-spacer>
-                <span class="display-1">当前年B： {{ currentYearB }}</span>
+                <span class="display-0">当前SLIDE： {{ slide }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前Direction： {{ stepDirection }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >重置次数： {{ resets }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="display-0">当前步骤：{{step}}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前步骤B：{{stepB}}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前年A： {{ currentYear }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前年B： {{ currentYearB }}</span>
               </v-col>
             </v-row>
             <v-row justify="center" align="center">
               <v-col>
                 <div>
-                  <canvas id="canvas3" ref="canvas3" height="100px"></canvas>
+                  <div :style="cStyle3">{{currentYearB}}</div>
+                  <canvas id="canvas3" ref="canvas3"></canvas>
                 </div>
                 <table border="1" cellspacing="0" cellpadding="0" ref="table3">
                   <tr style="height: 50px">
@@ -114,7 +135,8 @@
                   </tr>
                 </table>
                 <div>
-                  <canvas id="canvas4" ref="canvas4" height="100px"></canvas>
+                  <canvas id="canvas4" ref="canvas4"></canvas>
+                  <canvas id="canvas5" ref="canvas5"></canvas>
                 </div>
               </v-col>
             </v-row>
@@ -122,12 +144,17 @@
           <v-divider></v-divider>
           <v-card-actions>
             <v-btn class="green" @click="start">Start</v-btn>
+            <v-spacer></v-spacer>
             <v-btn class="primary" @click="chooseAnswer('A')">A</v-btn>
             <v-btn class="yellow darken-3" @click="chooseAnswer('AB')">A & B</v-btn>
             <v-btn class="purple" @click="chooseAnswer('B')">B</v-btn>
-            <v-btn class="purple" v-if="step>0" @click="reset">
+            <v-btn class="teal" v-if="step>0" @click="reset">
               <v-icon>refresh</v-icon>
             </v-btn>
+            <v-btn class="yellow" @click="showDetail=!showDetail">
+              <v-icon>mdi-details</v-icon>
+            </v-btn>
+            <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -138,6 +165,9 @@
 <script>
 export default {
   data: () => ({
+    cStyle1: "",
+    cStyle3: "",
+    showDetail: true,
     currentYear: 10,
     topYear: 10,
     step: 0,
@@ -155,7 +185,9 @@ export default {
     usedTime: 0,
     itemStartTime: 0,
     itemEndTime: 0,
-    itemUsedTime: 0
+    itemUsedTime: 0,
+    bAlertText:
+      "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
   }),
 
   methods: {
@@ -173,15 +205,20 @@ export default {
           this.drawLine(
             "canvas1",
             this.$refs.table1.offsetWidth,
-            100,
+            20,
             (this.$refs.table1.offsetWidth / this.topYear) * this.currentYear,
-            90,
+            10,
             0
+          );
+          this.cStyle1 = this.getStyle(
+            this.$refs.table1.offsetWidth,
+            this.topYear,
+            this.currentYear
           );
           this.drawLine(
             "canvas2",
             this.$refs.table2.offsetWidth,
-            100,
+            20,
             this.$refs.table2.offsetWidth,
             10,
             0
@@ -191,10 +228,15 @@ export default {
           this.drawLine(
             "canvas3",
             this.$refs.table3.offsetWidth,
-            100,
+            20,
             (this.$refs.table3.offsetWidth / this.topYearB) * this.currentYearB,
-            90,
+            10,
             0
+          );
+          this.cStyle3 = this.getStyle(
+            this.$refs.table3.offsetWidth,
+            this.topYearB,
+            this.currentYearB
           );
         }
       });
@@ -205,18 +247,14 @@ export default {
           if (this.step === 0) {
             this.currentYear = this.currentYear - 10;
           } else if (this.step === 1) {
-            alert(
-              "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
-            );
+            alert(this.bAlertText);
             this.slide = 2;
             this.stepDirection++;
           } else if (this.step === 2) {
             this.currentYear--;
           } else if (this.step >= 3) {
             if (this.stepDirection >= 1 && this.currentYear === 0.5) {
-              alert(
-                "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
-              );
+              alert(this.bAlertText);
               this.slide = 2;
               this.stepDirection++;
             }
@@ -228,9 +266,7 @@ export default {
             ) {
               this.currentYear = this.currentYear - 0.5;
             } else if (this.currentYear === 0) {
-              alert(
-                "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
-              );
+              alert(this.bAlertText);
               this.slide = 2;
               this.stepDirection++;
             } else {
@@ -357,16 +393,21 @@ export default {
           this.drawLine(
             "canvas1",
             this.$refs.table1.offsetWidth,
-            100,
+            20,
             (this.$refs.table1.offsetWidth / this.topYear) * this.currentYear,
-            90,
+            10,
             0
           );
-          console.log();
+          // 生成样式
+          this.cStyle1 = this.getStyle(
+            this.$refs.table1.offsetWidth,
+            this.topYear,
+            this.currentYear
+          );
           this.drawLine(
             "canvas2",
             this.$refs.table2.offsetWidth,
-            100,
+            20,
             this.$refs.table2.offsetWidth,
             10,
             0
@@ -378,16 +419,29 @@ export default {
           this.drawLine(
             "canvas3",
             this.$refs.table3.offsetWidth,
-            100,
+            20,
             (this.$refs.table3.offsetWidth / this.topYearB) * this.currentYearB,
-            90,
+            10,
             0
           );
           this.drawLine(
             "canvas4",
-            this.$refs.table4.offsetWidth,
-            100,
-            this.$refs.table4.offsetWidth,
+            this.$refs.table4.offsetWidth / 2,
+            20,
+            this.$refs.table4.offsetWidth / 2,
+            10,
+            0
+          );
+          this.cStyle3 = this.getStyle(
+            this.$refs.table3.offsetWidth,
+            this.topYearB,
+            this.currentYearB
+          );
+          this.drawLine(
+            "canvas5",
+            this.$refs.table4.offsetWidth / 2,
+            20,
+            this.$refs.table4.offsetWidth / 2,
             10,
             0
           );
@@ -443,6 +497,8 @@ export default {
         ctx.lineTo(5, -10);
         ctx.lineTo(0, 0);
         ctx.fill();
+        // ctx.fillText("hello abelit",50,90);
+        // ctx.textAlign = center;
         ctx.restore();
         ctx.closePath();
       }
@@ -486,6 +542,14 @@ export default {
     },
     getUsedTime() {
       setInterval(this.end, 1000);
+    },
+    getStyle(w, ty, cy) {
+      var width = w;
+      var paddingRight = w - (w / ty) * cy;
+
+      return (
+        "width: " + width + "px; " + "padding-right: " + paddingRight + "px;"
+      );
     }
   },
   created() {
@@ -505,19 +569,20 @@ export default {
     this.drawLine(
       "canvas1",
       this.$refs.table1.offsetWidth,
-      100,
+      20,
       this.$refs.table1.offsetWidth,
-      90,
+      10,
       0
     );
     this.drawLine(
       "canvas2",
       this.$refs.table2.offsetWidth,
-      100,
+      20,
       this.$refs.table2.offsetWidth,
       10,
       0
     );
+    console.log(this.$refs.table1.getBoundingClientRect());
   },
   computed: {
     allContent: function() {
