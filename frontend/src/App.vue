@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar dark absolute app>
+    <v-app-bar dark app dense>
       <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
       <v-toolbar-title>EQ PVT</v-toolbar-title>
