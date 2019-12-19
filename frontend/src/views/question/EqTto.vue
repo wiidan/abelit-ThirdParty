@@ -453,9 +453,13 @@ export default {
     },
     end() {
       this.endTime = new Date();
-      this.usedTime = this.startTime?  this.getFormatTime(this.startTime, this.endTime): "00:00:00";
+      this.usedTime = this.startTime
+        ? this.getFormatTime(this.startTime, this.endTime)
+        : "00:00:00";
       this.itemEndTime = new Date();
-      this.itemUsedTime = this.itemStartTime?  this.getFormatTime(this.itemStartTime, this.itemStartTime): "00:00:00";
+      this.itemUsedTime = this.itemStartTime
+        ? this.getFormatTime(this.itemStartTime, this.itemEndTime)
+        : "00:00:00";
     },
     getFormatTime(stime, etime) {
       //计算小时数
