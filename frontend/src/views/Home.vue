@@ -11,7 +11,7 @@
             tile
             width="120"
             height="80"
-            @click="hi()"
+            @click="hi(item)"
           >
             {{item}}
           </v-card>
@@ -27,8 +27,8 @@ export default {
     questionList: ['PVT','TTO','TTO Feedback']
   }),
   methods: {
-    hi() {
-      alert("hi");
+    hi(msg) {
+      alert(msg);
     }
   }
 }
