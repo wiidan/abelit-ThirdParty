@@ -19,6 +19,7 @@
           width="200"
           dark
           class="mt-12 lime darken-4"
+          @click="startExam"
         >
           <v-icon>mdi-play</v-icon>
         </v-btn>
@@ -26,3 +27,18 @@
     </v-card>
     </v-container>
 </template>
+
+
+<script>
+export default {
+  name: "EqTip",
+  data: () => ({
+
+  }),
+  methods: {
+    startExam() {
+      this.$router.push({path: "/eq/tto"});
+    }
+  }
+}
+</script>

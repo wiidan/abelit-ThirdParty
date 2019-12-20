@@ -25,7 +25,7 @@ export default new Router({
     {
       path: "/eq/tto",
       name: "tto",
-      component: () => import("@/views/question/EqTto.vue")
+      component: () => import("@/views/EqTtoExam.vue")
     },
     {
       path: "/eq",

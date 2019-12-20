@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card class="mt-12">
+    <v-card >
       <v-card-title class="display-1">To be filled in by interviewer</v-card-title>
       <v-card-text>
         <v-row justify="center" class="mt-12">
@@ -8,7 +8,7 @@
             <v-subheader class="eq-userinfo">Interviewer</v-subheader>
           </v-col>
           <v-col cols="4">
-            <v-select :items="interviewers" label="- select -" outlined v-model="interviewer"></v-select>
+            <v-select :items="interviewers"  :item-text="itemText" item-value="id" label="- select -" outlined v-model="interviewer"></v-select>
           </v-col>
         </v-row>
         <v-row justify="center" class="mt-12">
@@ -48,15 +48,18 @@
 </template>
 
 <script>
+import dataInterviewer from "@/assets/data/interviewer.json";
+
 export default {
   name: "EqUserInfo",
   //   props: ["interviewers", "blockQuestions"],
   data: () => ({
-    interviewers: [1, 2, 3, 4, 5],
+    interviewers: [{}],
     blockQuestions: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"],
     interviewer: "",
     participant: "",
-    blockQuestion: ""
+    blockQuestion: "",
+    itemText: "cnname"
   }),
   methods: {
     saveUserInfo() {
@@ -70,6 +73,9 @@ export default {
         this.$router.push({ path: "/eq/tip" });
       });
     }
+  },
+  mounted() {
+    this.interviewers = dataInterviewer;
   }
 };
 </script>

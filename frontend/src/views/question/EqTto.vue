@@ -37,6 +37,10 @@
                 <span
                   class="display-0"
                 >当前年B： {{ currentYearB }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span
+                  class="display-0"
+                >当前题目： {{ block.name }}</span>
               </v-col>
             </v-row>
             <v-row justify="center" align="center">
@@ -72,6 +76,9 @@
                 <div>
                   <canvas id="canvas2" ref="canvas2"></canvas>
                 </div>
+                <v-alert type="info" width="350">
+                 {{ block.text}}
+                </v-alert>
               </v-col>
             </v-row>
           </v-card-text>
@@ -164,6 +171,8 @@
 
 <script>
 export default {
+  name: "EqTto",
+  props: ["block"],
   data: () => ({
     cStyle1: "",
     cStyle3: "",
@@ -379,7 +388,9 @@ export default {
         this.itemEndTime = 0;
         this.itemUsedTime = 0;
         this.getUsedTime();
-        return;
+        // this.reset();
+        //通过改变父组件的值
+        this.updateItem();
       }
       this.selected.push(type);
       this.step++;
@@ -388,6 +399,7 @@ export default {
       }
 
       // this.clearCanvas('canvas1')
+      if (type != 'A' || type != 'B') return false;
       if (this.currentYear >= 0 && this.slide === 1) {
         this.$nextTick(() => {
           this.drawLine(
@@ -415,6 +427,7 @@ export default {
         });
       }
       if (this.currentYearB >= 0 && this.slide === 2) {
+
         this.$nextTick(() => {
           this.drawLine(
             "canvas3",
@@ -550,6 +563,9 @@ export default {
       return (
         "width: " + width + "px; " + "padding-right: " + paddingRight + "px;"
       );
+    },
+    updateItem() {
+      this.$emit('cUpdateItem');
     }
   },
   created() {
@@ -582,7 +598,8 @@ export default {
       10,
       0
     );
-    console.log(this.$refs.table1.getBoundingClientRect());
+    // console.log(this.$refs.table1.getBoundingClientRect());
+    console.log("EqTto ....")
   },
   computed: {
     allContent: function() {

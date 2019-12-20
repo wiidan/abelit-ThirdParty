@@ -51,8 +51,8 @@ export default {
       },
       {
         id: 4,
-        name: "Open End",
-        content: "EQ-PVT Open End 问卷",
+        name: "Open Ended",
+        content: "EQ-PVT Open Ended 问卷",
         description: ""
       }
     ]
