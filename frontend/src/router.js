@@ -7,8 +7,7 @@ Vue.use(Router);
 export default new Router({
   mode: "history",
   base: process.env.BASE_URL,
-  routes: [
-    {
+  routes: [{
       path: "/",
       name: "home",
       component: Home
@@ -20,7 +19,7 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () =>
-        import(/* webpackChunkName: "about" */ "./views/About.vue")
+        import( /* webpackChunkName: "about" */ "./views/About.vue")
     },
     {
       path: "/eq/tto",
@@ -41,6 +40,11 @@ export default new Router({
       path: "/eq/tip",
       name: "tip",
       component: () => import("@/views/EqTip.vue")
+    },
+    {
+      path: "/eq/end",
+      name: "end",
+      component: () => import("@/views/EqEndPage.vue")
     },
   ]
 });

@@ -1,7 +1,13 @@
 <template>
   <div>
-      <eq-tto v-for="item in eqTtoQuestions" :key="item.id" v-if="item.id==currentItem" :block="item" v-on:cUpdateItem="pUpdateItem"
+    <template v-for="item in eqTtoQuestions">
+      <eq-tto
+        v-if="item.id===currentItem"
+        :block="item"
+        v-on:cUpdateItem="pUpdateItem"
+        :key="item.id"
       ></eq-tto>
+    </template>
   </div>
 </template>
 
@@ -13,17 +19,20 @@ export default {
     EqTto
   },
   data: () => ({
-      eqTtoQuestions: [{}],
-      currentItem: 1
+    eqTtoQuestions: [{}],
+    currentItem: 1
   }),
   mounted() {
-      this.eqTtoQuestions = dataEqttoquestion;
-      console.log(this.eqTtoQuestions)
+    this.eqTtoQuestions = dataEqttoquestion;
+    console.log(this.eqTtoQuestions);
   },
   methods: {
-      pUpdateItem() {
-          this.currentItem++;
+    pUpdateItem() {
+      this.currentItem++;
+      if (this.currentItem > this.eqTtoQuestions.length - 1) {
+        this.$router.push({ path: "/eq/end" });
       }
+    }
   }
 };
 </script>

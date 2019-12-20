@@ -76,9 +76,7 @@
                 <div>
                   <canvas id="canvas2" ref="canvas2"></canvas>
                 </div>
-                <v-alert type="info" width="350">
-                 {{ block.text}}
-                </v-alert>
+                <v-alert type="info" width="350">{{ block.text}}</v-alert>
               </v-col>
             </v-row>
           </v-card-text>
@@ -191,10 +189,10 @@ export default {
     currentTime: "",
     startTime: 0,
     endTime: 0,
-    usedTime: 0,
+    usedTime: "00:00:00",
     itemStartTime: 0,
     itemEndTime: 0,
-    itemUsedTime: 0,
+    itemUsedTime: "00:00:00",
     bAlertText:
       "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
   }),
@@ -399,7 +397,7 @@ export default {
       }
 
       // this.clearCanvas('canvas1')
-      if (type != 'A' || type != 'B') return false;
+      if (type != "A" || type != "B") return false;
       if (this.currentYear >= 0 && this.slide === 1) {
         this.$nextTick(() => {
           this.drawLine(
@@ -427,7 +425,6 @@ export default {
         });
       }
       if (this.currentYearB >= 0 && this.slide === 2) {
-
         this.$nextTick(() => {
           this.drawLine(
             "canvas3",
@@ -565,7 +562,7 @@ export default {
       );
     },
     updateItem() {
-      this.$emit('cUpdateItem');
+      this.$emit("cUpdateItem");
     }
   },
   created() {
@@ -599,7 +596,7 @@ export default {
       0
     );
     // console.log(this.$refs.table1.getBoundingClientRect());
-    console.log("EqTto ....")
+    console.log("EqTto ....");
   },
   computed: {
     allContent: function() {
