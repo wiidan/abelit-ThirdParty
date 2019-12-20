@@ -1,12 +1,17 @@
 <template>
   <v-app>
-    <v-app-bar dark app dense>
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-toolbar-title>EQ PVT</v-toolbar-title>
-
+    <v-app-bar app>
+      <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+      <router-link to="/">
+        <v-img
+          :src="require('@/assets/images/eq5d_logo.gif')"
+          height="64"
+          max-height="64"
+          max-width="250"
+        ></v-img>
+      </router-link>
+      <!-- <v-toolbar-title>EQ-5D</v-toolbar-title> -->
       <v-spacer></v-spacer>
-
       <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>

@@ -26,6 +26,21 @@ export default new Router({
       path: "/eq/tto",
       name: "tto",
       component: () => import("@/views/question/EqTto.vue")
-    }
+    },
+    {
+      path: "/eq",
+      name: "start",
+      component: () => import("@/views/EqStartPage.vue")
+    },
+    {
+      path: "/eq/user",
+      name: "user",
+      component: () => import("@/views/EqUserInfo.vue")
+    },
+    {
+      path: "/eq/tip",
+      name: "tip",
+      component: () => import("@/views/EqTip.vue")
+    },
   ]
 });
