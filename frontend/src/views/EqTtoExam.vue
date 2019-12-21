@@ -29,7 +29,7 @@ export default {
   methods: {
     pUpdateItem() {
       this.currentItem++;
-      if (this.currentItem > this.eqTtoQuestions.length - 1) {
+      if (this.currentItem > this.eqTtoQuestions.length) {
         this.$router.push({ path: "/eq/end" });
       }
     }

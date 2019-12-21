@@ -76,7 +76,7 @@
                 <div>
                   <canvas id="canvas2" ref="canvas2"></canvas>
                 </div>
-                <v-alert type="info" width="350">{{ block.text}}</v-alert>
+                <v-alert type="info" width="350" v-html="block.text">{{block.text}}</v-alert>
               </v-col>
             </v-row>
           </v-card-text>
