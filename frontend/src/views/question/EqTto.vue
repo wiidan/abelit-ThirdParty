@@ -397,7 +397,10 @@ export default {
       }
 
       // this.clearCanvas('canvas1')
-      if (type != "A" || type != "B") return false;
+      if (type != "A" && type != "B") {
+        // console.log("type: "+type)
+        return false;
+      };
       if (this.currentYear >= 0 && this.slide === 1) {
         this.$nextTick(() => {
           this.drawLine(

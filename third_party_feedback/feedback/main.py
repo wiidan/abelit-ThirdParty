@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
+import os
 
 
 app = Flask(__name__)
@@ -10,12 +11,38 @@ app.config['JSON_AS_ASCII'] = False
 # 跨域设置
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-# 连接数据库
-conn = sqlite3.connect('question.db',check_same_thread=False)
-
+@app.route('/initdb')
 def init_db():
-    conn.execute('create table interviewer(id int,)')
-    conn.commit()
+    os.remove('question.db')
+
+    # 连接数据库
+    conn = sqlite3.connect('question.db',check_same_thread=False)
+
+    all_table_text = "SELECT lower(name),sql FROM sqlite_master WHERE type='table' ORDER BY 1"
+    cursor = conn.cursor()
+
+    result = cursor.execute(all_table_text)
+
+    for table in result:
+        conn.execute("drop table {0}".format(table[0]))
+
+    SQL_TEXT = ["create table tto_question(id integer, presentation text,type text, name text,block integer,source_text text)","create table interviewer(id integer, name text)"]
+
+    for sql in SQL_TEXT:
+        conn.execute(sql)
+
+    result = cursor.execute(all_table_text)
+    table_list = []
+
+    for table in result:
+        table_list.append({"name": table[0], "sql": table[1]})
+
+
+    cursor.close()
+    conn.close()
+    return jsonify({"status": 200, "msg": "Reinit database successfully!","tables": table_list})
+
+   
 
 
 @app.route("/api/addmoreanswer",methods=['POST'])
