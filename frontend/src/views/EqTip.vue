@@ -33,11 +33,31 @@
 export default {
   name: "EqTip",
   data: () => ({
-
   }),
   methods: {
     startExam() {
-      this.$router.push({path: "/eq/tto"});
+      switch(this.examType.id) {
+        case 1:
+          this.$router.push({path: "/eq/dce"});
+          break;
+        case 2:
+          this.$router.push({path: "/eq/tto"});
+          break;
+        case 3:
+          this.$router.push({path: "/eq/ttofeedback"});
+          break;
+        case 4:
+          this.$router.push({path: "/eq/opened"});
+          break;
+        default:
+          alert("题库不存在，即将跳转到首页！")
+          this.$router.push({path: "/"});
+      } 
+    }
+  },
+  computed: {
+    examType() {
+      return this.$store.state.examType;
     }
   }
 }

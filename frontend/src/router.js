@@ -22,9 +22,24 @@ export default new Router({
         import( /* webpackChunkName: "about" */ "./views/About.vue")
     },
     {
+      path: "/eq/dce",
+      name: "dce",
+      component: () => import("@/views/question/EqDce.vue")
+    },
+    {
       path: "/eq/tto",
       name: "tto",
       component: () => import("@/views/EqTtoExam.vue")
+    },
+    {
+      path: "/eq/ttofeedback",
+      name: "ttofeedback",
+      component: () => import("@/views/question/EqTtoFeedback.vue")
+    },
+    {
+      path: "/eq/opened",
+      name: "opened",
+      component: () => import("@/views/question/EqOpened.vue")
     },
     {
       path: "/eq",

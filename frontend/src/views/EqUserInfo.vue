@@ -55,7 +55,7 @@ export default {
   //   props: ["interviewers", "blockQuestions"],
   data: () => ({
     interviewers: [{}],
-    blockQuestions: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"],
+    blockQuestions: ["1", "2", "3", "4", "5", "6"],
     interviewer: "",
     participant: "",
     blockQuestion: "",

@@ -1,9 +1,9 @@
 # coding:utf8
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import sqlite3
 import os
-
+import readexcel
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -11,8 +11,19 @@ app.config['JSON_AS_ASCII'] = False
 # 跨域设置
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/initdb')
+@app.route('/initdb', methods=['POST','GET'])
 def init_db():
+    if request.method == 'GET':
+        return '''<form action="/initdb" method="post">
+  密码: <input type="password" name="pwd" />
+  <input type="submit" value="初始化" />
+</form>'''
+
+    password =  request.form.get("pwd")
+
+    if not password or password != 'abelit':
+        return jsonify({"status": 400, "msg": "请输入密码"})
+
     os.remove('question.db')
 
     # 连接数据库
@@ -26,10 +37,19 @@ def init_db():
     for table in result:
         conn.execute("drop table {0}".format(table[0]))
 
-    SQL_TEXT = ["create table tto_question(id integer, presentation text,type text, name text,block integer,source_text text)","create table interviewer(id integer, name text)"]
+    SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text)","create table interviewer(id integer, name text)"]
 
     for sql in SQL_TEXT:
         conn.execute(sql)
+
+    # Insert Data
+    for data in readexcel.read('./data/questions.xlsx','interviewers', True):
+        cursor.execute("insert into interviewer(id, name) values({0},'{1}')".format(data[0],data[1]))
+    conn.commit()
+
+    for data in readexcel.read('./data/questions.xlsx','TTO & TTO-Feedback', True):
+        cursor.execute("insert into tto_question(presentation,type,name,block,source_text) values('{0}','{1}','{2}','{3}','{4}')".format(data[0],data[1],data[2],data[3],data[4]))
+    conn.commit()
 
     result = cursor.execute(all_table_text)
     table_list = []
@@ -43,7 +63,24 @@ def init_db():
     return jsonify({"status": 200, "msg": "Reinit database successfully!","tables": table_list})
 
    
+@app.route("/api/question/tto")
+def get_tto_question():
+    block = request.args.get('block')
+    print(block)
+    # 连接数据库
+    conn = sqlite3.connect('question.db',check_same_thread=False)
+    cursor = conn.cursor()
 
+    SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question where block='-' or block='{0}'".format(block)
+
+    result = cursor.execute(SQL_TEXT)
+    
+    data = []
+
+    for row in result:
+        data.append({"id": row[0], "presentation": row[1], "type": row[2], "name": row[3], "block": row[4], "source_text": row[5]})
+
+    return jsonify(data)
 
 @app.route("/api/addmoreanswer",methods=['POST'])
 def add_more_answer():

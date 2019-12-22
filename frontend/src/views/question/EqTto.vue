@@ -76,7 +76,7 @@
                 <div>
                   <canvas id="canvas2" ref="canvas2"></canvas>
                 </div>
-                <v-alert type="info" width="350" v-html="block.text">{{block.text}}</v-alert>
+                <v-alert type="info" width="350" v-html="block.source_text">{{block.source_text}}</v-alert>
               </v-col>
             </v-row>
           </v-card-text>
@@ -599,7 +599,7 @@ export default {
       0
     );
     // console.log(this.$refs.table1.getBoundingClientRect());
-    console.log("EqTto ....");
+    // console.log("EqTto ....");
   },
   computed: {
     allContent: function() {

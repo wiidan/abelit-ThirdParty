@@ -12,6 +12,12 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 // import material design icon fonts
 import "@mdi/font/css/materialdesignicons.css";
 
+
+// import axios for ajax application
+import axios from "axios";
+axios.defaults.baseURL = "http://localhost:5000";
+Vue.prototype.$axios = axios;
+
 Vue.config.productionTip = false;
 
 new Vue({
