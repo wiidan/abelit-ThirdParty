@@ -170,7 +170,7 @@
 <script>
 export default {
   name: "EqTto",
-  props: ["block"],
+  props: ["block", "startTime"],
   data: () => ({
     cStyle1: "",
     cStyle3: "",
@@ -187,7 +187,7 @@ export default {
     stepDirection: 0,
     resets: 0,
     currentTime: "",
-    startTime: 0,
+    // startTime: 0,
     endTime: 0,
     usedTime: "00:00:00",
     itemStartTime: 0,
@@ -384,7 +384,7 @@ export default {
         console.log("本题用时：" + this.itemUsedTime);
         this.itemStartTime = new Date();
         this.itemEndTime = 0;
-        this.itemUsedTime = 0;
+        this.itemUsedTime = "00:00:00";
         this.getUsedTime();
         // this.reset();
         //通过改变父组件的值
@@ -517,7 +517,7 @@ export default {
       }
     },
     start() {
-      this.startTime = new Date();
+      // this.startTime = new Date();
       this.itemStartTime = new Date();
     },
     end() {
@@ -525,6 +525,7 @@ export default {
       this.usedTime = this.startTime
         ? this.getFormatTime(this.startTime, this.endTime)
         : "00:00:00";
+      console.log(this.usedTime)
       this.itemEndTime = new Date();
       this.itemUsedTime = this.itemStartTime
         ? this.getFormatTime(this.itemStartTime, this.itemEndTime)
@@ -570,6 +571,9 @@ export default {
   },
   created() {
     // this.getCurrentTime();
+    // console.log("created tto")
+    this.start();
+    // this.startTime = new Date();
     this.getUsedTime();
   },
   beforeDestroy() {

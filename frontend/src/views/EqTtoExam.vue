@@ -4,6 +4,7 @@
       <eq-tto
         v-if="eqTtoQuestions.indexOf(item)===currentItem"
         :block="item"
+        :startTime="startTime"
         v-on:cUpdateItem="pUpdateItem"
         :key="item.id"
       ></eq-tto>
@@ -22,12 +23,16 @@ export default {
   },
   data: () => ({
     eqTtoQuestions: [{}],
-    currentItem: 0
+    currentItem: 0,
+    startTime: 0
   }),
   created() {
     this.getQuestion();
+    this.startTime = new Date();
   },
-  mounted() {},
+  mounted() {
+    console.log("EQ tto Exam")
+  },
   computed: {
     ...mapState(["userInfo"])
   },
