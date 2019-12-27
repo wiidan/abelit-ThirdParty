@@ -38,7 +38,7 @@ def init_db():
         conn.execute("drop table {0}".format(table[0]))
 
     SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text)",
-                "create table interviewer(id integer, name text)", "create table dce_question(id integer primary key autoincrement,presentation text,name text,block integer,answer text,source_text text)","create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text)"]
+                "create table interviewer(id integer, name text)", "create table dce_question(id integer primary key autoincrement,presentation text,name integer,block integer,answer text,source_text text)","create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text)"]
 
     for sql in SQL_TEXT:
         conn.execute(sql)
