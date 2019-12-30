@@ -138,6 +138,36 @@ def get_open_question():
 
     return jsonify(data)
 
+@app.route("/api/question/blocks")
+def get_question_blocks():
+    block_type = str(request.args.get('type'))
+    # 连接数据库
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+    table_name = ""
+
+    if block_type == "1":
+        table_name = "dce_question"
+    elif block_type == "2":
+        table_name = "tto_question"
+    elif block_type == "3":
+        table_name = "tto_question"
+    elif block_type == "4":
+        table_name = "opened_question"
+    else: 
+        return "table not exists."
+
+    SQL_TEXT = "select distinct block from {0}".format(table_name)
+    result = cursor.execute(SQL_TEXT)
+
+    blocks = []
+
+    for row in result:
+        blocks.append(row[0])
+
+    return jsonify(blocks)
+
+
 @app.route("/api/addmoreanswer",methods=['POST'])
 def add_more_answer():
     content = request.get_json()
