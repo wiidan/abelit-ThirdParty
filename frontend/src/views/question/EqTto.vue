@@ -168,13 +168,14 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: "EqTto",
   props: ["block", "startTime"],
   data: () => ({
     cStyle1: "",
     cStyle3: "",
-    showDetail: true,
+    showDetail: false,
     currentYear: 10,
     topYear: 10,
     step: 0,
@@ -194,7 +195,8 @@ export default {
     itemEndTime: 0,
     itemUsedTime: "00:00:00",
     bAlertText:
-      "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。"
+      "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。",
+    ttoAnswer: ""
   }),
 
   methods: {
@@ -381,6 +383,27 @@ export default {
         }
       } else {
         alert("A&B");
+        var ttoValue = 0;
+        if (this.stepDirection % 2 == 0){
+          ttoValue = this.currentYear * 0.1;
+        } else {
+          ttoValue =  (this.currentYearB - 10)*0.1;
+        }
+        var answerObj = {
+          participant: this.userInfo.participant,
+          interviewer: this.userInfo.interviewer,
+          item: this.block.name,
+          position_of_item: this.block.id,
+          tto_value: ttoValue,
+          time: this.usedTime,
+          composite_switches: this.stepDirection,
+          resets: this.resets,
+          number_of_moves: this.step,
+          block: this.block.block,
+          version: "V17"
+        }
+        this.ttoAnswer = answerObj;
+
         console.log("本题用时：" + this.itemUsedTime);
         this.itemStartTime = new Date();
         this.itemEndTime = 0;
@@ -525,7 +548,7 @@ export default {
       this.usedTime = this.startTime
         ? this.getFormatTime(this.startTime, this.endTime)
         : "00:00:00";
-      console.log(this.usedTime)
+      // console.log(this.usedTime)
       this.itemEndTime = new Date();
       this.itemUsedTime = this.itemStartTime
         ? this.getFormatTime(this.itemStartTime, this.itemEndTime)
@@ -566,7 +589,7 @@ export default {
       );
     },
     updateItem() {
-      this.$emit("cUpdateItem");
+      this.$emit("cUpdateItem", this.ttoAnswer);
     }
   },
   created() {
@@ -614,7 +637,8 @@ export default {
         }
         return arr;
       };
-    }
+    },
+    ...mapState(["userInfo"])
   }
 };
 </script>
