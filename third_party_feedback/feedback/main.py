@@ -157,7 +157,7 @@ def get_question_blocks():
     else: 
         return "table not exists."
 
-    SQL_TEXT = "select distinct block from {0}".format(table_name)
+    SQL_TEXT = "select distinct block from {0} where block<>'-'".format(table_name)
     result = cursor.execute(SQL_TEXT)
 
     blocks = []
