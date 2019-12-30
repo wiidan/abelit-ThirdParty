@@ -49,7 +49,8 @@ export default {
     block: 1,
     itemOrder: [],
     name: "",
-    selectedAnswer: ""
+    selectedAnswer: "",
+    dceAnswers: []
   }),
   created() {
     this.getdceQuestion();
@@ -60,11 +61,32 @@ export default {
   },
   methods: {
     nextBtn() {
-        if (this.itemOrder.indexOf(this.name)+1>=this.itemOrder.length) {
-            alert("haha");
-            return false;
-        }
-        this.name = this.itemOrder[this.itemOrder.indexOf(this.name)+1]
+      if (!this.selectedAnswer) {
+        alert("信息填写不完整！");
+        return false;
+      }
+
+      if (this.itemOrder.indexOf(this.name) + 1 >= this.itemOrder.length) {
+        alert("回答完毕！");
+        this.$router.push({ path: "/eq/end" });
+      }
+      var answerObj = {
+        participant: this.userInfo.participant,
+        interviewer: this.userInfo.interviewer,
+        item: this.name,
+        position_of_item: this.itemOrder.indexOf(this.name) + 1,
+        selected_state: this.selectedAnswer,
+        dce_reversal: "",
+        block: this.userInfo.blockQuestion,
+        version: "V17"
+      };
+
+      this.dceAnswers.push(answerObj);
+
+      console.log(this.dceAnswers);
+
+      this.selectedAnswer = "";
+      this.name = this.itemOrder[this.itemOrder.indexOf(this.name) + 1];
     },
     chooseAnswer(item) {
       this.selectedAnswer = item;
@@ -76,7 +98,7 @@ export default {
           params: { block: this.userInfo.blockQuestion }
         })
         .then(res => {
-        //   this.dceQuestion = res.data;
+          //   this.dceQuestion = res.data;
           var arrKey = [];
           var arrTemp = [];
           for (let i = 0; i < res.data.length; i++) {
@@ -102,8 +124,8 @@ export default {
             }
             arrTemp.push(obj);
           }
-          console.log(arrTemp)
-          this.dceQuestion =  arrTemp;
+          console.log(arrTemp);
+          this.dceQuestion = arrTemp;
           this.itemOrder = arrKey;
           this.name = this.dceQuestion[0].name;
         })

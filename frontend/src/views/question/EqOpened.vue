@@ -30,7 +30,7 @@
   </v-container>
 </template>
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 //import dataOeq from "@/assets/data/oeq.json";
 export default {
   data: () => ({
@@ -47,16 +47,20 @@ export default {
   mounted() {},
   methods: {
     nextBtn() {
+      if (!this.inputAnswer) {
+        alert("请按要求填写信息！");
+        return false;
+      }
       var answerOjb = {
         participant: this.userInfo.participant,
         interviewer: this.userInfo.interviewer,
         item: this.oeqQuestion[this.step].name,
-        type: '4',
+        type: "4",
         position_of_item: this.step + 1,
         participant_answer: this.inputAnswer,
-        block: 'A',
-        version: 'V17'
-      }
+        block: "A",
+        version: "V17"
+      };
 
       this.openedAnswers.push(answerOjb);
 
@@ -65,6 +69,8 @@ export default {
         this.name = this.oeqQuestion[this.step].name;
       } else {
         alert("回答完毕");
+        this.$router.push({ path: "/eq/end" });
+
       }
       this.inputAnswer = "";
     },
