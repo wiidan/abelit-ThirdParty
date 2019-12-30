@@ -1,9 +1,7 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title class="display-1"
-        >To be filled in by interviewer</v-card-title
-      >
+      <v-card-title class="display-1">To be filled in by interviewer</v-card-title>
       <v-card-text>
         <v-row justify="center" class="mt-12">
           <v-col cols="2">
@@ -25,11 +23,7 @@
             <v-subheader class="eq-userinfo">Participant ID</v-subheader>
           </v-col>
           <v-col cols="4">
-            <v-text-field
-              label="- participant id -"
-              outlined
-              v-model="participant"
-            ></v-text-field>
+            <v-text-field label="- participant id -" outlined v-model="participant"></v-text-field>
           </v-col>
         </v-row>
         <v-row justify="center" class="mt-12" v-if="blocks[0] != 'A'">
@@ -37,12 +31,7 @@
             <v-subheader class="eq-userinfo">Block of questions</v-subheader>
           </v-col>
           <v-col cols="4">
-            <v-select
-              :items="blocks"
-              label="- select -"
-              outlined
-              v-model="blockQuestion"
-            ></v-select>
+            <v-select :items="blocks" label="- select -" outlined v-model="blockQuestion"></v-select>
           </v-col>
         </v-row>
       </v-card-text>
@@ -82,6 +71,9 @@ export default {
   }),
   methods: {
     saveUserInfo() {
+      if (this.blocks[0] == "A") {
+        this.blockQuestion = "A";
+      }
       var obj = {
         interviewer: this.interviewer,
         participant: this.participant,
@@ -96,15 +88,16 @@ export default {
         alert("信息填写不完整");
         return false;
       }
+
       this.$store.dispatch("setUserInfo", obj).then(() => {
-        console.log(obj);
+        // console.log(obj);
         this.$router.push({ path: "/eq/tip" });
       });
     }
   },
   mounted() {
     this.interviewers = dataInterviewer;
-    console.log(this.blocks);
+    // console.log(this.blocks);
   },
   computed: {
     ...mapState(["blocks"])
