@@ -62,7 +62,7 @@ export default {
   methods: {
     nextBtn() {
       if (!this.selectedAnswer) {
-        alert("信息填写不完整！");
+        alert("请选择您的答案！");
         return false;
       }
 
