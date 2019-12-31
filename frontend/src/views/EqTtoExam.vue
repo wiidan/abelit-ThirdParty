@@ -46,6 +46,7 @@ export default {
       // console.log(this.currentItem);
       // console.log(this.eqTtoQuestions.length)
       if (this.currentItem > this.eqTtoQuestions.length - 1) {
+        this.$store.dispatch("setAllAnswer", this.ttoAnswers);
         this.$router.push({ path: "/eq/end" });
       }
     },

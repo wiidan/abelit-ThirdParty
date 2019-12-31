@@ -390,12 +390,13 @@ export default {
           ttoValue =  (this.currentYearB - 10)*0.1;
         }
         var answerObj = {
+          questionid: this.examType.id,
           participant: this.userInfo.participant,
           interviewer: this.userInfo.interviewer,
           item: this.block.name,
           position_of_item: this.block.id,
           tto_value: ttoValue,
-          time: this.usedTime,
+          used_time: this.itemUsedTime,
           composite_switches: this.stepDirection,
           resets: this.resets,
           number_of_moves: this.step,
@@ -638,7 +639,7 @@ export default {
         return arr;
       };
     },
-    ...mapState(["userInfo"])
+    ...mapState(["userInfo","examType"])
   }
 };
 </script>

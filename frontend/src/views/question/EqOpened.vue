@@ -52,10 +52,10 @@ export default {
         return false;
       }
       var answerOjb = {
+        questionid: this.examType.id,
         participant: this.userInfo.participant,
         interviewer: this.userInfo.interviewer,
         item: this.oeqQuestion[this.step].name,
-        type: "4",
         position_of_item: this.step + 1,
         participant_answer: this.inputAnswer,
         block: "A",
@@ -63,12 +63,16 @@ export default {
       };
 
       this.openedAnswers.push(answerOjb);
+      console.log(this.openedAnswers)
+      console.log(this.userInfo)
+      console.log(this.examType)
 
       if (this.step + 1 < this.oeqQuestion.length) {
         this.step++;
         this.name = this.oeqQuestion[this.step].name;
       } else {
         alert("回答完毕");
+        this.$store.dispatch("setAllAnswer", this.openedAnswers);
         this.$router.push({ path: "/eq/end" });
 
       }
@@ -89,7 +93,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["userInfo"])
+    ...mapState(["userInfo","examType"])
   }
 };
 </script>

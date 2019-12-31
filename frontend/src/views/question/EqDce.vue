@@ -15,7 +15,8 @@
           @click="chooseAnswer(item.answerA)"
         >
           <h3>{{ item.answerA }}</h3>
-          <p>{{ item.sourceTextA }}</p>
+          <p v-if="randNum == 1">{{ item.sourceTextA }}</p>
+          <p v-else>{{ item.sourceTextB }}</p>
         </v-card>
       </v-col>
       <v-col cols="6" v-if="item.name == name">
@@ -27,7 +28,8 @@
           @click="chooseAnswer(item.answerB)"
         >
           <h3>{{ item.answerB }}</h3>
-          <p>{{ item.sourceTextB }}</p>
+          <p v-if="randNum==1">{{ item.sourceTextB }}</p>
+          <p v-else>{{ item.sourceTextB }}</p>
         </v-card>
       </v-col>
     </v-row>
@@ -50,14 +52,18 @@ export default {
     itemOrder: [],
     name: "",
     selectedAnswer: "",
-    dceAnswers: []
+    dceAnswers: [],
+    dceReversal: "NORMAL",
+    randNum: 1
   }),
   created() {
     this.getdceQuestion();
+    this.randNum = this.randomNum(1,2);
+    console.log(this.randNum)
   },
   mounted() {},
   computed: {
-    ...mapState(["userInfo"])
+    ...mapState(["userInfo","examType"])
   },
   methods: {
     nextBtn() {
@@ -68,15 +74,24 @@ export default {
 
       if (this.itemOrder.indexOf(this.name) + 1 >= this.itemOrder.length) {
         alert("回答完毕！");
+        this.$store.dispatch("setAllAnswer", this.dceAnswers);
         this.$router.push({ path: "/eq/end" });
       }
+
+      if (this.randNum ==1){
+        this.dceReversal = "NORMAL";
+      } else {
+        this.dceReversal = "NONORMAL";
+      }
+
       var answerObj = {
+        questionid: this.examType.id,
         participant: this.userInfo.participant,
         interviewer: this.userInfo.interviewer,
         item: this.name,
         position_of_item: this.itemOrder.indexOf(this.name) + 1,
         selected_state: this.selectedAnswer,
-        dce_reversal: "",
+        dce_reversal: this.dceReversal,
         block: this.userInfo.blockQuestion,
         version: "V17"
       };
@@ -99,6 +114,8 @@ export default {
         })
         .then(res => {
           //   this.dceQuestion = res.data;
+          // console.log(res.data);
+          // console.log(this.randomNum(1,2))
           var arrKey = [];
           var arrTemp = [];
           for (let i = 0; i < res.data.length; i++) {
@@ -132,6 +149,19 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    },
+    randomNum(minNum, maxNum) {
+      switch (arguments.length) {
+        case 1:
+          return parseInt(Math.random() * minNum + 1, 10);
+          break;
+        case 2:
+          return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+          break;
+        default:
+          return 0;
+          break;
+      }
     }
   }
 };
