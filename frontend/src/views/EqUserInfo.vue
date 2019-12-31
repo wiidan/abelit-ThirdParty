@@ -4,10 +4,10 @@
       <v-card-title class="display-1">To be filled in by interviewer</v-card-title>
       <v-card-text>
         <v-row justify="center" class="mt-12">
-          <v-col cols="2">
+          <v-col cols="2" xs="4">
             <v-subheader class="eq-userinfo">Interviewer</v-subheader>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="4" xs="4">
             <v-select
               :items="interviewers"
               :item-text="itemText"

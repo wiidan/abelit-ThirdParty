@@ -56,7 +56,7 @@
                       :key="item"
                       style="text-align: center; width: 24px"
                       :class="item<=4*currentYear?'light-green lighten-1':''"
-                    >{{item}}</td>
+                    ></td>
                   </tr>
                 </table>
               </v-col>
@@ -70,7 +70,7 @@
                       :key="item"
                       style="text-align: center; width: 24px"
                       class="blue lighten-2"
-                    >{{item}}</td>
+                    ></td>
                   </tr>
                 </table>
                 <div>
