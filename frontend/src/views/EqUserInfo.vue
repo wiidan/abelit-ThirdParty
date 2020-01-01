@@ -9,8 +9,8 @@
           </v-col>
           <v-col cols="4" xs="4">
             <v-select
-              :items="interviewers"
-              :item-text="itemText"
+              :items="interviewerList"
+              item-text="name"
               item-value="id"
               label="- select -"
               outlined
@@ -55,14 +55,12 @@
 </template>
 
 <script>
-import dataInterviewer from "@/assets/data/interviewer.json";
 import { mapState } from "vuex";
 
 export default {
   name: "EqUserInfo",
-  //   props: ["interviewers", "blockQuestions"],
   data: () => ({
-    interviewers: [{}],
+    interviewerList: [],
     blockQuestions: [],
     interviewer: "",
     participant: "",
@@ -91,13 +89,20 @@ export default {
 
       this.$store.dispatch("setUserInfo", obj).then(() => {
         // console.log(obj);
+        // 跳转到提示路由
         this.$router.push({ path: "/eq/tip" });
+      });
+    },
+    // 从后台获取interviewer
+    getInterviewer() {
+      this.$axios.get("/api/interviewer").then(res => {
+        this.interviewerList = res.data;
+        console.log(this.interviewerList);
       });
     }
   },
   mounted() {
-    this.interviewers = dataInterviewer;
-    // console.log(this.blocks);
+    this.getInterviewer();
   },
   computed: {
     ...mapState(["blocks"])

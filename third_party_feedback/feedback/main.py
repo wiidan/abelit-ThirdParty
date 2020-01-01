@@ -12,7 +12,8 @@ app.config['JSON_AS_ASCII'] = False
 # 跨域设置
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/initdb', methods=['POST','GET'])
+
+@app.route('/initdb', methods=['POST', 'GET'])
 def init_db():
     if request.method == 'GET':
         return '''<form action="/initdb" method="post">
@@ -20,7 +21,7 @@ def init_db():
   <input type="submit" value="初始化" />
 </form>'''
 
-    password =  request.form.get("pwd")
+    password = request.form.get("pwd")
 
     if not password or password != 'abelit':
         return jsonify({"status": 400, "msg": "请输入密码"})
@@ -28,7 +29,7 @@ def init_db():
     os.remove('question.db')
 
     # 连接数据库
-    conn = sqlite3.connect('question.db',check_same_thread=False)
+    conn = sqlite3.connect('question.db', check_same_thread=False)
 
     all_table_text = "SELECT lower(name),sql FROM sqlite_master WHERE type='table' ORDER BY 1"
     cursor = conn.cursor()
@@ -41,7 +42,7 @@ def init_db():
     # create tables
     SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text)",
                 "create table interviewer(id integer, name text)", "create table dce_question(id integer primary key autoincrement,presentation text,name integer,block integer,answer text,source_text text)",
-                "create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text)", 
+                "create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text)",
                 "create table dce_answer(id integer primary key autoincrement,questionid integer,participant integer,interviewer text,item integer, position_of_item integer,selected_state text,dce_reversal text,block integer, version text,created_timestamp timestamp current_timestamp)",
                 "create table tto_answer(id integer primary key autoincrement,questionid integer, participant integer, interviewer text,item text,position_of_item integer,tto_value real,used_time text,composite_switches interger,resets integer,number_of_moves integer,block text,version text,created_timestamp timestamp current_timestamp)",
                 "create table opened_answer(id integer primary key autoincrement,questionid integer, participant integer,interviewer text,item text,position_of_item integer,participant_answer text,block text, version text,created_timestamp timestamp current_timestamp)"]
@@ -50,14 +51,16 @@ def init_db():
         conn.execute(sql)
 
     # Insert Data
-    #omtervoewers
-    for data in readexcel.read('./data/questions.xlsx','interviewers', True):
-        cursor.execute("insert into interviewer(id, name) values({0},'{1}')".format(data[0],data[1]))
+    # omtervoewers
+    for data in readexcel.read('./data/questions.xlsx', 'interviewers', True):
+        cursor.execute(
+            "insert into interviewer(id, name) values({0},'{1}')".format(data[0], data[1]))
     conn.commit()
 
     #TTO & TTO-Feedback
-    for data in readexcel.read('./data/questions.xlsx','TTO & TTO-Feedback', True):
-        cursor.execute("insert into tto_question(presentation,type,name,block,source_text) values('{0}','{1}','{2}','{3}','{4}')".format(data[0],data[1],data[2],data[3],data[4]))
+    for data in readexcel.read('./data/questions.xlsx', 'TTO & TTO-Feedback', True):
+        cursor.execute("insert into tto_question(presentation,type,name,block,source_text) values('{0}','{1}','{2}','{3}','{4}')".format(
+            data[0], data[1], data[2], data[3], data[4]))
     conn.commit()
 
     # DCE
@@ -78,27 +81,48 @@ def init_db():
     for table in result:
         table_list.append({"name": table[0], "sql": table[1]})
 
-
     cursor.close()
     conn.close()
-    return jsonify({"status": 200, "msg": "Reinit database successfully!","tables": table_list})
+    return jsonify({"status": 200, "msg": "Reinit database successfully!", "tables": table_list})
 
-   
+
+@app.route("/api/interviewer")
+def get_interviewer():
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+
+    SQL_TEXT = "select id, name from interviewer"
+
+    result = cursor.execute(SQL_TEXT)
+
+    data = []
+
+    for row in result:
+        data.append({
+            "id": row[0],
+            "name": row[1]
+        })
+
+    return jsonify(data)
+
+
 @app.route("/api/question/tto")
 def get_tto_question():
     block = request.args.get('block')
     # 连接数据库
-    conn = sqlite3.connect('question.db',check_same_thread=False)
+    conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question where block='-' or block='{0}'".format(block)
+    SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question where block='-' or block='{0}'".format(
+        block)
 
     result = cursor.execute(SQL_TEXT)
-    
+
     data = []
 
     for row in result:
-        data.append({"id": row[0], "presentation": row[1], "type": row[2], "name": row[3], "block": row[4], "source_text": row[5]})
+        data.append({"id": row[0], "presentation": row[1], "type": row[2],
+                     "name": row[3], "block": row[4], "source_text": row[5]})
 
     return jsonify(data)
 
@@ -144,6 +168,7 @@ def get_open_question():
 
     return jsonify(data)
 
+
 @app.route("/api/question/blocks")
 def get_question_blocks():
     block_type = str(request.args.get('type'))
@@ -160,10 +185,11 @@ def get_question_blocks():
         table_name = "tto_question"
     elif block_type == "4":
         table_name = "opened_question"
-    else: 
+    else:
         return "table not exists."
 
-    SQL_TEXT = "select distinct block from {0} where block<>'-'".format(table_name)
+    SQL_TEXT = "select distinct block from {0} where block<>'-'".format(
+        table_name)
     result = cursor.execute(SQL_TEXT)
 
     blocks = []
@@ -200,7 +226,7 @@ def add_tto_answer():
         msg = err
         status = 600
 
-    return jsonify({"msg": msg,"status":status})
+    return jsonify({"msg": msg, "status": status})
     # return jsonify(request.get_json())
 
 
@@ -314,6 +340,7 @@ def get_open_answer():
 
     return jsonify(data)
 
+
 if __name__ == "__main__":
     # init_db()
-    app.run(host="0.0.0.0",debug=True)
+    app.run(host="0.0.0.0", debug=True)
