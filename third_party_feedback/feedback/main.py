@@ -1,13 +1,18 @@
 # coding:utf8
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import os
 import readexcel
 import json
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
+
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','xls','xlsx'}
+UPLOAD_PATH = os.path.join(os.path.dirname(__file__),'uploadfiles')
+app.config['UPLOAD_PATH'] = UPLOAD_PATH
 
 # 跨域设置
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -115,6 +120,9 @@ def get_tto_question():
 
     SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question where block='-' or block='{0}'".format(
         block)
+    
+    if block == "all":
+        SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question"
 
     result = cursor.execute(SQL_TEXT)
 
@@ -137,6 +145,9 @@ def get_dce_question():
     SQL_TEXT = "select id,presentation,name,block,answer,source_text from dce_question where block='{0}'".format(
         block)
 
+    if block == "all":
+        SQL_TEXT = "select id,presentation,name,block,answer,source_text from dce_question"
+
     result = cursor.execute(SQL_TEXT)
 
     data = []
@@ -157,6 +168,9 @@ def get_open_question():
 
     SQL_TEXT = "select id,presentation,name,block,source_text from opened_question where block='{0}'".format(
         block)
+
+    if block=="all":
+        SQL_TEXT = "select id,presentation,name,block,source_text from opened_question"
 
     result = cursor.execute(SQL_TEXT)
 
@@ -241,8 +255,7 @@ def get_tto_answer():
     result = cursor.execute(SQL_TEXT)
     data = []
     for row in result:
-        print(row)
-        data.append(row)
+        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"tto_value":row[6],"used_time":row[7],"composite_switches":row[8],"resets":row[9],"number_of_moves":row[10],"block":row[11],"version":row[12],"created_timestamp": row[13]})
 
     return jsonify(data)
 
@@ -289,7 +302,7 @@ def get_dce_answer():
     data = []
     for row in result:
         print(row)
-        data.append(row)
+        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"selected_state":row[6],"dce_reversal":row[7],"block":row[8],"version":row[9],"created_timestamp":row[10]})
 
     return jsonify(data)
 
@@ -336,10 +349,32 @@ def get_open_answer():
     data = []
     for row in result:
         print(row)
-        data.append(row)
+        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"participant_answer":row[6],"block":row[7],"version":row[8],"created_timestamp":row[9]})
 
     return jsonify(data)
 
+
+@app.route("/api/upload", methods=["POST"])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_PATH'],filename))
+    return jsonify({
+        "status": 200,
+        "filename": filename
+    })
+
+
+# 访问上传的文件
+# http://localhost:5000/uploadfiles/<filename>.jpg/png/pdf
+@app.route('/uploadfiles/<filename>/', methods=['GET', 'POST'])
+def get_file(filename):
+    return send_from_directory(app.config['UPLOAD_PATH'], filename)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == "__main__":
     # init_db()

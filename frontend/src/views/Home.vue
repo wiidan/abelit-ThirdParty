@@ -17,7 +17,7 @@
       <v-col cols="12">
         <v-row align="center" justify="center">
           <v-card
-            v-for="item in questionList"
+            v-for="item in questionType"
             :key="item.id"
             class="ma-3 pa-6 text-center display-1"
             color="#036f90"
@@ -39,7 +39,7 @@ import questiontype from "@/assets/data/questiontype.json";
 export default {
 
   data: () => ({
-    questionList: questiontype
+    questionType: questiontype
   }),
   methods: {
     saveExamType(value) {
