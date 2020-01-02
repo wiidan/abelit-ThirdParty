@@ -1,174 +1,202 @@
 <template>
   <v-container class="grey lighten-5" fluid>
-    <v-row justify="center" align="center">
-      <v-col>
-        <v-card justify="center" align="center">
-          <v-card-title>
-            EQ TTO Demo
-            <v-spacer></v-spacer>
-            <span color="grey">总共用时： {{usedTime}}</span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span color="grey">本题用时： {{itemUsedTime}}</span>
-          </v-card-title>
-          <v-divider></v-divider>
-          <v-card-text v-if="slide === 1">
-            <v-row v-if="showDetail">
-              <v-col>
-                <span class="display-0">当前SLIDE： {{ slide }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前Direction： {{ stepDirection }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >重置次数： {{ resets }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="display-0">当前步骤：{{step}}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前步骤B：{{stepB}}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前年A： {{ currentYear }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前年B： {{ currentYearB }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前题目： {{ block.name }}</span>
-              </v-col>
+    <v-card justify="center" align="center">
+      <v-card-title>
+        EQ TTO Demo
+        <v-spacer></v-spacer>
+        <span color="grey">总共用时： {{usedTime}}</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span color="grey">本题用时： {{itemUsedTime}}</span>
+      </v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <v-row>
+          <v-col cols="3" class="px-8">
+            <v-row justify="end" class="pt-8">
+              <v-btn class="primary" @click="chooseAnswer('A')" fab large dark>A</v-btn>
             </v-row>
-            <v-row justify="center" align="center">
-              <v-col>
-                <div>
-                  <div :style="cStyle1">{{currentYear}}</div>
-                  <canvas id="canvas1" ref="canvas1"></canvas>
-                </div>
-                <table border="1" cellspacing="0" cellpadding="0" ref="table1">
-                  <tr style="height: 50px">
-                    <td
-                      v-for="item in allContent(topYear)"
-                      :key="item"
-                      style="text-align: center; width: 24px"
-                      :class="item<=4*currentYear?'light-green lighten-1':''"
-                    ></td>
-                  </tr>
-                </table>
-              </v-col>
+            <v-row justify="end" class="my-2">
+              <v-btn class="yellow darken-3" @click="chooseAnswer('AB')" large dark>A & B</v-btn>
             </v-row>
-            <v-row justify="center" align="center" class="pt-12 mt-12">
-              <v-col>
-                <table border="1" cellspacing="0" cellpadding="0" ref="table2">
-                  <tr style="height: 50px">
-                    <td
-                      v-for="item in allContent(topYear)"
-                      :key="item"
-                      style="text-align: center; width: 24px"
-                      class="blue lighten-2"
-                    ></td>
-                  </tr>
-                </table>
-                <div>
-                  <canvas id="canvas2" ref="canvas2"></canvas>
-                </div>
-                <v-alert type="info" width="350" v-html="block.source_text">{{block.source_text}}</v-alert>
-              </v-col>
+            <v-row justify="end" class="my-2">
+              <v-btn class="purple" @click="chooseAnswer('B')" fab large dark>B</v-btn>
             </v-row>
-          </v-card-text>
+            <v-row justify="end" class="my-2">
+              <v-btn class="teal" v-if="step>0" @click="reset">
+                <v-icon>refresh</v-icon>
+              </v-btn>
+            </v-row>
+          </v-col>
+          <v-col cols="9" class="px-8" v-if="slide==1">
+            <v-row v-if="showDetail" justify="start">
+              <span class="display-0">当前SLIDE： {{ slide }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span
+                class="display-0"
+              >当前Direction： {{ stepDirection }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="display-0">重置次数： {{ resets }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="display-0">当前步骤：{{step}}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span class="display-0">当前步骤B：{{stepB}}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span
+                class="display-0"
+              >当前年A： {{ currentYear }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span
+                class="display-0"
+              >当前年B： {{ currentYearB }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span
+                class="display-0"
+              >当前题目： {{ block.name }}</span>
+            </v-row>
+            <v-row justify="start" align="center">
+              <div>
+                <div :style="cStyle1">{{currentYear}}</div>
+                <canvas id="canvas1" ref="canvas1"></canvas>
+              </div>
+              <table border="1" cellspacing="0" cellpadding="0" ref="table1">
+                <tr style="height: 50px">
+                  <td
+                    v-for="item in allContent(topYear)"
+                    :key="item"
+                    style="text-align: center; width: 24px"
+                    :class="item<=4*currentYear?'light-green lighten-1':''"
+                  ></td>
+                </tr>
+              </table>
+            </v-row>
+            <v-row justify="start" align="center" class="pt-12 mt-12">
+              <table border="1" cellspacing="0" cellpadding="0" ref="table2">
+                <tr style="height: 50px">
+                  <td
+                    v-for="item in allContent(topYear)"
+                    :key="item"
+                    style="text-align: center; width: 24px"
+                    class="blue lighten-2"
+                  ></td>
+                </tr>
+              </table>
+              <div>
+                <canvas id="canvas2" ref="canvas2"></canvas>
+              </div>
+            </v-row>
+          </v-col>
+          <v-col cols="9" class="px-8" v-if="slide==2">
+            <v-row justify="start">
+              <div>
+                <div :style="cStyle3">{{currentYearB}}</div>
+                <canvas id="canvas3" ref="canvas3"></canvas>
+              </div>
+              <table border="1" cellspacing="0" cellpadding="0" ref="table3">
+                <tr style="height: 50px">
+                  <td
+                    v-for="item in allContent(topYearB)"
+                    :key="item"
+                    style="text-align: center; width: 16px"
+                    :class="item<=4*currentYearB?'light-green lighten-1':''"
+                  ></td>
+                </tr>
+              </table>
+            </v-row>
+            <v-row justify="start" align="center" class="pt-12 mt-12">
+              <table border="1" cellspacing="0" cellpadding="0" ref="table4">
+                <tr style="height: 50px">
+                  <td
+                    v-for="item in allContent(topYearB)"
+                    :key="item"
+                    style="text-align: center; width: 16px"
+                    :class="item<=40?'light-green lighten-1':'blue lighten-2'"
+                  ></td>
+                </tr>
+              </table>
+              <div>
+                <canvas id="canvas4" ref="canvas4"></canvas>
+                <canvas id="canvas5" ref="canvas5"></canvas>
+              </div>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center" v-if="slide==1">
+          <v-col cols="6">
+            <v-row>
+              <div class="message-box pa-5 mt-5" style="margin-left: 200px;">
+                <span>{{block.source_text}}</span>
+              </div>
+            </v-row>
+          </v-col>
+        </v-row>
 
-          <v-card-text v-if="slide === 2">
-            <v-row v-if="showDetail">
-              <v-col>
-                <span class="display-0">当前SLIDE： {{ slide }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前Direction： {{ stepDirection }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >重置次数： {{ resets }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="display-0">当前步骤：{{step}}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前步骤B：{{stepB}}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前年A： {{ currentYear }}</span>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span
-                  class="display-0"
-                >当前年B： {{ currentYearB }}</span>
-              </v-col>
+        <v-row justify="center" align="center" v-if="slide==2">
+          <v-col cols="6">
+            <v-row>
+              <div class="message-box-1 pa-5 mt-5" style="margin-left: 200px;">
+                <span>完全健康</span>
+              </div>
             </v-row>
-            <v-row justify="center" align="center">
-              <v-col>
-                <div>
-                  <div :style="cStyle3">{{currentYearB}}</div>
-                  <canvas id="canvas3" ref="canvas3"></canvas>
-                </div>
-                <table border="1" cellspacing="0" cellpadding="0" ref="table3">
-                  <tr style="height: 50px">
-                    <td
-                      v-for="item in allContent(topYearB)"
-                      :key="item"
-                      style="text-align: center; width: 16px"
-                      :class="item<=4*currentYearB?'light-green lighten-1':''"
-                    ></td>
-                  </tr>
-                </table>
-              </v-col>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center" v-if="slide==2">
+          <v-col cols="6">
+            <v-row>
+              <div class="message-box-2 pa-5 mt-5" style="margin-left: 200px;text-align:left">
+                <!-- <li v-for="msg in block.source_text.split('*')" :key="msg.key"><span v-if="msg != ''">{{msg}}</span></li> -->
+                <span>{{block.source_text.split('*') == ""}}</span>
+              </div>
             </v-row>
-            <v-row justify="center" align="center" class="pt-12 mt-12">
-              <v-col>
-                <table border="1" cellspacing="0" cellpadding="0" ref="table4">
-                  <tr style="height: 50px">
-                    <td
-                      v-for="item in allContent(topYearB)"
-                      :key="item"
-                      style="text-align: center; width: 16px"
-                      :class="item<=40?'light-green lighten-1':'blue lighten-2'"
-                    ></td>
-                  </tr>
-                </table>
-                <div>
-                  <canvas id="canvas4" ref="canvas4"></canvas>
-                  <canvas id="canvas5" ref="canvas5"></canvas>
-                </div>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn class="green" @click="start">Start</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn class="primary" @click="chooseAnswer('A')">A</v-btn>
-            <v-btn class="yellow darken-3" @click="chooseAnswer('AB')">A & B</v-btn>
-            <v-btn class="purple" @click="chooseAnswer('B')">B</v-btn>
-            <v-btn class="teal" v-if="step>0" @click="reset">
-              <v-icon>refresh</v-icon>
-            </v-btn>
-            <v-btn class="yellow" @click="showDetail=!showDetail">
-              <v-icon>mdi-details</v-icon>
-            </v-btn>
-            <v-spacer></v-spacer>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <!-- <v-card-text v-if="slide === 2">
+        <v-row v-if="showDetail">
+          <v-col>
+            <span class="display-0">当前SLIDE： {{ slide }}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span
+              class="display-0"
+            >当前Direction： {{ stepDirection }}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="display-0">重置次数： {{ resets }}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="display-0">当前步骤：{{step}}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="display-0">当前步骤B：{{stepB}}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span
+              class="display-0"
+            >当前年A： {{ currentYear }}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span
+              class="display-0"
+            >当前年B： {{ currentYearB }}</span>
+          </v-col>
+        </v-row>
+      </v-card-text>-->
+      <v-divider></v-divider>
+      <!-- <v-card-actions>
+        <v-btn class="green" @click="start">Start</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn class="primary" @click="chooseAnswer('A')">A</v-btn>
+        <v-btn class="yellow darken-3" @click="chooseAnswer('AB')">A & B</v-btn>
+        <v-btn class="purple" @click="chooseAnswer('B')">B</v-btn>
+        <v-btn class="teal" v-if="step>0" @click="reset">
+          <v-icon>refresh</v-icon>
+        </v-btn>
+        <v-btn class="yellow" @click="showDetail=!showDetail">
+          <v-icon>mdi-details</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+      </v-card-actions>-->
+    </v-card>
   </v-container>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 export default {
   name: "EqTto",
   props: ["block", "startTime"],
@@ -384,10 +412,10 @@ export default {
       } else {
         alert("A&B");
         var ttoValue = 0;
-        if (this.stepDirection % 2 == 0){
+        if (this.stepDirection % 2 == 0) {
           ttoValue = this.currentYear * 0.1;
         } else {
-          ttoValue =  (this.currentYearB - 10)*0.1;
+          ttoValue = (this.currentYearB - 10) * 0.1;
         }
         var answerObj = {
           questionid: this.examType.id,
@@ -402,7 +430,7 @@ export default {
           number_of_moves: this.step,
           block: this.block.block,
           version: "V17"
-        }
+        };
         this.ttoAnswer = answerObj;
 
         console.log("本题用时：" + this.itemUsedTime);
@@ -424,7 +452,7 @@ export default {
       if (type != "A" && type != "B") {
         // console.log("type: "+type)
         return false;
-      };
+      }
       if (this.currentYear >= 0 && this.slide === 1) {
         this.$nextTick(() => {
           this.drawLine(
@@ -639,7 +667,80 @@ export default {
         return arr;
       };
     },
-    ...mapState(["userInfo","examType"])
+    ...mapState(["userInfo", "examType"])
   }
 };
 </script>
+
+
+<style lang="scss" scoped>
+.message-box {
+  position: relative;
+  width: 400px;
+  height: 200px;
+  left: 0px;
+  border: 2px solid #74a1e0;
+  background-color: #74a1e0;
+  border-radius: 25px;
+}
+.message-box:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 200px;
+  top: -90px;
+
+  border-top: 60px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 30px solid #74a1e0;
+  border-left: 120px solid transparent;
+}
+.message-box-1 {
+  position: relative;
+  width: 400px;
+  height: 200px;
+  left: 0px;
+
+  border: 2px solid #9CCC65;
+  background-color: #9CCC65;
+  border-radius: 25px;
+}
+.message-box-1:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 200px;
+  top: -90px;
+
+  border-top: 60px solid transparent;
+  border-right: 120px solid transparent;
+  border-bottom: 30px solid #9CCC65;
+  border-left: 10px solid transparent;
+}
+.message-box-2 {
+  position: relative;
+  float: left;
+    top: -240px;
+  width: 400px;
+  height: 200px;
+  left: 600px;
+  border: 2px solid #74a1e0;
+  background-color: #74a1e0;
+  border-radius: 25px;
+}
+.message-box-2:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 200px;
+  top: -90px;
+
+  border-top: 60px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 30px solid #74a1e0;
+  border-left: 120px solid transparent;
+}
+</style>

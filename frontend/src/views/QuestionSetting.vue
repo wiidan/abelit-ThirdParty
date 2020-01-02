@@ -60,7 +60,7 @@
       </v-row>
     </div>
 
-     <div v-if="type==4">
+    <div v-if="type==4">
       <v-row>
         <v-col cols="6">
           <v-row>
@@ -226,3 +226,4 @@ export default {
   }
 };
 </script>
+
