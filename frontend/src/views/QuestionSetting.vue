@@ -30,23 +30,46 @@
 
     <div v-if="type==3">
       <v-row>
-        <v-col cols="6">
+        <v-col cols="3">
           <v-row>
-            <v-subheader>题目类型</v-subheader>
-            <v-select
-              :items="questionTypes"
-              v-model="qtype"
-              item-value="id"
-              item-text="name"
-              label="选题题型"
-              outlined
-              @change="getQuestion"
-            ></v-select>
+            <v-col>
+              <v-subheader>题目类型</v-subheader>
+            </v-col>
+            <v-col>
+              <v-select
+                :items="questionTypes"
+                v-model="qtype"
+                item-value="id"
+                item-text="name"
+                label="选题题型"
+                outlined
+                @change="getQuestionVersion"
+              ></v-select>
+            </v-col>
           </v-row>
         </v-col>
-        <!-- <v-col>
-          <v-btn color="success" @click="getQuestion">getQuestion</v-btn>
-        </v-col>-->
+        <v-col cols="3">
+          <v-row>
+            <v-col>
+              <v-subheader>题库版本</v-subheader>
+            </v-col>
+            <v-col>
+              <v-select
+                :items="questionVersions"
+                v-model="qversion"
+                item-value="version"
+                item-text="version"
+                label="选择版本号"
+                outlined
+              ></v-select>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="3" class="pa-8">
+          <v-btn color="primary" @click="getQuestion" large>
+            <v-icon>search</v-icon>
+          </v-btn>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
@@ -103,7 +126,9 @@ export default {
     msg: "",
     snackbar: false,
     questionTypes: questiontype,
+    questionVersions: [],
     qtype: "",
+    qversion: "",
     tableHeaders: [],
     tableData: []
   }),
@@ -123,7 +148,7 @@ export default {
           }
         })
         .then(res => {
-          console.log("success");
+          console.log(res);
           this.msg = "文件上传成功！";
           this.snackbar = true;
 
@@ -153,10 +178,10 @@ export default {
         default:
           alert("题型不存在");
       }
-
+      console.log(this.qversion);
       this.$axios
         .get(url, {
-          params: { block: "all" }
+          params: { block: "all", version: ""}
         })
         .then(res => {
           //   console.log(res.data)
@@ -165,20 +190,20 @@ export default {
           var objHeader = [];
           var objKey = Object.keys(objData[0]);
 
+  
           for (let i = 0; i < objKey.length; i++) {
             objHeader.push({
               text: objKey[i],
               value: objKey[i]
             });
           }
-          //   console.log(objHeader)
+  
           this.tableHeaders = objHeader;
           this.tableData = objData;
         })
         .catch(err => {
           console.log(err);
         });
-      console.log(this.qtype);
     },
     getAnswer() {
       var url;
@@ -222,6 +247,46 @@ export default {
           console.log(err);
         });
       console.log(this.qtype);
+    },
+    getQuestionVersion() {
+      var url;
+      switch (this.qtype) {
+        case 1:
+          url = "/api/question/dce";
+          break;
+        case 2:
+          url = "/api/question/tto";
+          break;
+        case 3:
+          url = "/api/question/ttofeedback";
+          break;
+        case 4:
+          url = "/api/question/open";
+          break;
+        default:
+          alert("题型不存在");
+      }
+
+      this.$axios
+        .get(url, {
+          params: { block: "all"}
+        })
+        .then(res => {
+          var objData = res.data;
+
+          var objVersion = [];
+
+          for (let i = 0; i < objData.length; i++) {
+            if (objVersion.indexOf(objData[i].version) == -1) {
+              objVersion.push({ version: objData[i].version });
+            }
+          }
+          objVersion.push("all");
+          this.questionVersions = objVersion;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 };

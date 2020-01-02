@@ -45,9 +45,10 @@ def init_db():
         conn.execute("drop table {0}".format(table[0]))
 
     # create tables
-    SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text)",
-                "create table interviewer(id integer, name text)", "create table dce_question(id integer primary key autoincrement,presentation text,name integer,block integer,answer text,source_text text)",
-                "create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text)",
+    SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text,version text,created_timestamp timestamp current_timestamp)",
+                "create table interviewer(id integer, name text)", 
+                "create table dce_question(id integer primary key autoincrement,presentation text,name integer,block integer,answer text,source_text text, version text,created_timestamp timestamp current_timestamp)",
+                "create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text, version text, created_timestamp timestamp current_timestamp)",
                 "create table dce_answer(id integer primary key autoincrement,questionid integer,participant integer,interviewer text,item integer, position_of_item integer,selected_state text,dce_reversal text,block integer, version text,created_timestamp timestamp current_timestamp)",
                 "create table tto_answer(id integer primary key autoincrement,questionid integer, participant integer, interviewer text,item text,position_of_item integer,tto_value real,used_time text,composite_switches interger,resets integer,number_of_moves integer,block text,version text,created_timestamp timestamp current_timestamp)",
                 "create table opened_answer(id integer primary key autoincrement,questionid integer, participant integer,interviewer text,item text,position_of_item integer,participant_answer text,block text, version text,created_timestamp timestamp current_timestamp)"]
@@ -56,28 +57,28 @@ def init_db():
         conn.execute(sql)
 
     # Insert Data
-    # omtervoewers
+    # interviewer Question
     for data in readexcel.read('./data/questions.xlsx', 'interviewers', True):
         cursor.execute(
             "insert into interviewer(id, name) values({0},'{1}')".format(data[0], data[1]))
     conn.commit()
 
-    #TTO & TTO-Feedback
+    #TTO & TTO-Feedback Question
     for data in readexcel.read('./data/questions.xlsx', 'TTO & TTO-Feedback', True):
-        cursor.execute("insert into tto_question(presentation,type,name,block,source_text) values('{0}','{1}','{2}','{3}','{4}')".format(
-            data[0], data[1], data[2], data[3], data[4]))
+        cursor.execute("insert into tto_question(presentation,type,name,block,source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}')".format(
+            data[0], data[1], data[2], data[3], data[4],data[5]))
     conn.commit()
 
-    # DCE
+    # DCE Question
     for data in readexcel.read('./data/questions.xlsx', 'DCE', True):
-        cursor.execute("insert into dce_question(presentation,name,block,answer,source_text) values('{0}','{1}','{2}','{3}','{4}')".format(
-            data[0], data[1], data[2], data[3], data[4]))
+        cursor.execute("insert into dce_question(presentation,name,block,answer,source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}')".format(
+            data[0], data[1], data[2], data[3], data[4],data[5]))
     conn.commit()
 
-    # Open ended questions
+    # Open ended Question
     for data in readexcel.read('./data/questions.xlsx', 'Open ended questions', True):
-        cursor.execute("insert into opened_question(presentation,name,block,source_text) values('{0}','{1}','{2}','{3}')".format(
-            data[0], data[1], data[2], data[3]))
+        cursor.execute("insert into opened_question(presentation,name,block,source_text,version) values('{0}','{1}','{2}','{3}','{4}')".format(
+            data[0], data[1], data[2], data[3],data[4]))
     conn.commit()
 
     result = cursor.execute(all_table_text)
@@ -114,15 +115,23 @@ def get_interviewer():
 @app.route("/api/question/tto")
 def get_tto_question():
     block = request.args.get('block')
+    version = request.args.get('version')
+    print("-----")
+    print(version == "")
+    print("******")
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question where block='-' or block='{0}'".format(
-        block)
+    SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question where (block='-' or block='{0}') and version='{1}'".format(
+        block,version)
     
     if block == "all":
-        SQL_TEXT = "select id,presentation,type,name,block,source_text from tto_question"
+        if version == "all" or version == "":
+            SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question"
+        else:
+            SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question where version='{0}'".format(version)
+
 
     result = cursor.execute(SQL_TEXT)
 
@@ -130,7 +139,7 @@ def get_tto_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "type": row[2],
-                     "name": row[3], "block": row[4], "source_text": row[5]})
+                     "name": row[3], "block": row[4], "source_text": row[5],"version": row[6]})
 
     return jsonify(data)
 
@@ -142,11 +151,11 @@ def get_dce_question():
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select id,presentation,name,block,answer,source_text from dce_question where block='{0}'".format(
+    SQL_TEXT = "select id,presentation,name,block,answer,source_text,version from dce_question where block='{0}'".format(
         block)
 
     if block == "all":
-        SQL_TEXT = "select id,presentation,name,block,answer,source_text from dce_question"
+        SQL_TEXT = "select id,presentation,name,block,answer,source_text,version from dce_question"
 
     result = cursor.execute(SQL_TEXT)
 
@@ -154,7 +163,7 @@ def get_dce_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "name": row[2],
-                     "block": row[3], "answer": row[4], "source_text": row[5]})
+                     "block": row[3], "answer": row[4], "source_text": row[5],"version": row[6]})
 
     return jsonify(data)
 
@@ -166,11 +175,11 @@ def get_open_question():
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select id,presentation,name,block,source_text from opened_question where block='{0}'".format(
+    SQL_TEXT = "select id,presentation,name,block,source_text,version from opened_question where block='{0}'".format(
         block)
 
     if block=="all":
-        SQL_TEXT = "select id,presentation,name,block,source_text from opened_question"
+        SQL_TEXT = "select id,presentation,name,block,source_text,version from opened_question"
 
     result = cursor.execute(SQL_TEXT)
 
@@ -178,7 +187,7 @@ def get_open_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "name": row[2],
-                     "block": row[3], "source_text": row[4]})
+                     "block": row[3], "source_text": row[4],"version":row[5]})
 
     return jsonify(data)
 

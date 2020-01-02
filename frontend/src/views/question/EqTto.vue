@@ -123,8 +123,12 @@
         <v-row justify="center" align="center" v-if="slide==1">
           <v-col cols="6">
             <v-row>
-              <div class="message-box pa-5 mt-5" style="margin-left: 200px;">
-                <span>{{block.source_text}}</span>
+              <div class="message-box pa-5 mt-5" style="margin-left: 200px; text-align: left">
+                <div v-for="msg in block.source_text.split('*')" :key="msg.key">
+                  <li v-if="msg != ''">
+                    <span>{{msg}}</span>
+                  </li>
+                </div>
               </div>
             </v-row>
           </v-col>
@@ -133,7 +137,7 @@
         <v-row justify="center" align="center" v-if="slide==2">
           <v-col cols="6">
             <v-row>
-              <div class="message-box-1 pa-5 mt-5" style="margin-left: 200px;">
+              <div class="message-box-1 pa-5 mt-5" style="margin-left: 200px;text-align:left">
                 <span>完全健康</span>
               </div>
             </v-row>
@@ -143,8 +147,11 @@
           <v-col cols="6">
             <v-row>
               <div class="message-box-2 pa-5 mt-5" style="margin-left: 200px;text-align:left">
-                <!-- <li v-for="msg in block.source_text.split('*')" :key="msg.key"><span v-if="msg != ''">{{msg}}</span></li> -->
-                <span>{{block.source_text.split('*') == ""}}</span>
+                <div v-for="msg in block.source_text.split('*')" :key="msg.key">
+                  <li v-if="msg != ''">
+                    <span>{{msg}}</span>
+                  </li>
+                </div>
               </div>
             </v-row>
           </v-col>
@@ -702,8 +709,8 @@ export default {
   height: 200px;
   left: 0px;
 
-  border: 2px solid #9CCC65;
-  background-color: #9CCC65;
+  border: 2px solid #9ccc65;
+  background-color: #9ccc65;
   border-radius: 25px;
 }
 .message-box-1:before {
@@ -716,13 +723,13 @@ export default {
 
   border-top: 60px solid transparent;
   border-right: 120px solid transparent;
-  border-bottom: 30px solid #9CCC65;
+  border-bottom: 30px solid #9ccc65;
   border-left: 10px solid transparent;
 }
 .message-box-2 {
   position: relative;
   float: left;
-    top: -240px;
+  top: -240px;
   width: 400px;
   height: 200px;
   left: 600px;
