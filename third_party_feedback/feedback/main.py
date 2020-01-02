@@ -10,8 +10,8 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','xls','xlsx'}
-UPLOAD_PATH = os.path.join(os.path.dirname(__file__),'uploadfiles')
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'xls', 'xlsx'}
+UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploadfiles')
 app.config['UPLOAD_PATH'] = UPLOAD_PATH
 
 # 跨域设置
@@ -46,7 +46,7 @@ def init_db():
 
     # create tables
     SQL_TEXT = ["create table tto_question(id integer primary key autoincrement, presentation text,type text, name text,block integer,source_text text,version text,created_timestamp timestamp current_timestamp)",
-                "create table interviewer(id integer, name text)", 
+                "create table interviewer(id integer, name text)",
                 "create table dce_question(id integer primary key autoincrement,presentation text,name integer,block integer,answer text,source_text text, version text,created_timestamp timestamp current_timestamp)",
                 "create table opened_question(id integer primary key autoincrement,presentation text,name text,block text,source_text text, version text, created_timestamp timestamp current_timestamp)",
                 "create table dce_answer(id integer primary key autoincrement,questionid integer,participant integer,interviewer text,item integer, position_of_item integer,selected_state text,dce_reversal text,block integer, version text,created_timestamp timestamp current_timestamp)",
@@ -63,22 +63,22 @@ def init_db():
             "insert into interviewer(id, name) values({0},'{1}')".format(data[0], data[1]))
     conn.commit()
 
-    #TTO & TTO-Feedback Question
+    # TTO & TTO-Feedback Question
     for data in readexcel.read('./data/questions.xlsx', 'TTO & TTO-Feedback', True):
         cursor.execute("insert into tto_question(presentation,type,name,block,source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}')".format(
-            data[0], data[1], data[2], data[3], data[4],data[5]))
+            data[0], data[1], data[2], data[3], data[4], data[5]))
     conn.commit()
 
     # DCE Question
     for data in readexcel.read('./data/questions.xlsx', 'DCE', True):
         cursor.execute("insert into dce_question(presentation,name,block,answer,source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}')".format(
-            data[0], data[1], data[2], data[3], data[4],data[5]))
+            data[0], data[1], data[2], data[3], data[4], data[5]))
     conn.commit()
 
     # Open ended Question
     for data in readexcel.read('./data/questions.xlsx', 'Open ended questions', True):
         cursor.execute("insert into opened_question(presentation,name,block,source_text,version) values('{0}','{1}','{2}','{3}','{4}')".format(
-            data[0], data[1], data[2], data[3],data[4]))
+            data[0], data[1], data[2], data[3], data[4]))
     conn.commit()
 
     result = cursor.execute(all_table_text)
@@ -124,14 +124,14 @@ def get_tto_question():
     cursor = conn.cursor()
 
     SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question where (block='-' or block='{0}') and version='{1}'".format(
-        block,version)
-    
+        block, version)
+
     if block == "all":
         if version == "all" or version == "":
             SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question"
         else:
-            SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question where version='{0}'".format(version)
-
+            SQL_TEXT = "select id,presentation,type,name,block,source_text,version from tto_question where version='{0}'".format(
+                version)
 
     result = cursor.execute(SQL_TEXT)
 
@@ -139,7 +139,7 @@ def get_tto_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "type": row[2],
-                     "name": row[3], "block": row[4], "source_text": row[5],"version": row[6]})
+                     "name": row[3], "block": row[4], "source_text": row[5], "version": row[6]})
 
     return jsonify(data)
 
@@ -163,7 +163,7 @@ def get_dce_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "name": row[2],
-                     "block": row[3], "answer": row[4], "source_text": row[5],"version": row[6]})
+                     "block": row[3], "answer": row[4], "source_text": row[5], "version": row[6]})
 
     return jsonify(data)
 
@@ -178,7 +178,7 @@ def get_open_question():
     SQL_TEXT = "select id,presentation,name,block,source_text,version from opened_question where block='{0}'".format(
         block)
 
-    if block=="all":
+    if block == "all":
         SQL_TEXT = "select id,presentation,name,block,source_text,version from opened_question"
 
     result = cursor.execute(SQL_TEXT)
@@ -187,7 +187,7 @@ def get_open_question():
 
     for row in result:
         data.append({"id": row[0], "presentation": row[1], "name": row[2],
-                     "block": row[3], "source_text": row[4],"version":row[5]})
+                     "block": row[3], "source_text": row[4], "version": row[5]})
 
     return jsonify(data)
 
@@ -264,7 +264,8 @@ def get_tto_answer():
     result = cursor.execute(SQL_TEXT)
     data = []
     for row in result:
-        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"tto_value":row[6],"used_time":row[7],"composite_switches":row[8],"resets":row[9],"number_of_moves":row[10],"block":row[11],"version":row[12],"created_timestamp": row[13]})
+        data.append({"id": row[0], "questionid": row[1], "participant": row[2], "interviewer": row[3], "item": row[4], "position_of_item": row[5], "tto_value": row[6],
+                     "used_time": row[7], "composite_switches": row[8], "resets": row[9], "number_of_moves": row[10], "block": row[11], "version": row[12], "created_timestamp": row[13]})
 
     return jsonify(data)
 
@@ -311,7 +312,8 @@ def get_dce_answer():
     data = []
     for row in result:
         print(row)
-        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"selected_state":row[6],"dce_reversal":row[7],"block":row[8],"version":row[9],"created_timestamp":row[10]})
+        data.append({"id": row[0], "questionid": row[1], "participant": row[2], "interviewer": row[3], "item": row[4], "position_of_item": row[5],
+                     "selected_state": row[6], "dce_reversal": row[7], "block": row[8], "version": row[9], "created_timestamp": row[10]})
 
     return jsonify(data)
 
@@ -358,7 +360,8 @@ def get_open_answer():
     data = []
     for row in result:
         print(row)
-        data.append({"id":row[0],"questionid":row[1],"participant":row[2],"interviewer":row[3],"item":row[4],"position_of_item":row[5],"participant_answer":row[6],"block":row[7],"version":row[8],"created_timestamp":row[9]})
+        data.append({"id": row[0], "questionid": row[1], "participant": row[2], "interviewer": row[3], "item": row[4],
+                     "position_of_item": row[5], "participant_answer": row[6], "block": row[7], "version": row[8], "created_timestamp": row[9]})
 
     return jsonify(data)
 
@@ -369,7 +372,7 @@ def upload_file():
         file = request.files.get('file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_PATH'],filename))
+            file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
     return jsonify({
         "status": 200,
         "filename": filename
@@ -382,8 +385,10 @@ def upload_file():
 def get_file(filename):
     return send_from_directory(app.config['UPLOAD_PATH'], filename)
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 if __name__ == "__main__":
     # init_db()
