@@ -431,12 +431,17 @@ def add_dce_answer():
 
 @app.route("/api/answer/dce")
 def get_dce_answer():
+    version = request.args.get('version')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
     SQL_TEXT = "select * from dce_answer"
     print(SQL_TEXT)
+
+    if version is not None and version != "all":
+        SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
     result = cursor.execute(SQL_TEXT)
     data = []
     for row in result:
@@ -494,6 +499,22 @@ def get_open_answer():
 
     return jsonify(data)
 
+
+@app.route("/api/participant")
+def get_all_participant():
+    version = request.args.get('version')
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+
+    SQL_TEXT = "select t1.participant,t2.questionid,t3.questionid,t4.questionid from (select distinct participant from dce_answer where version='{0}' union select distinct participant from tto_answer where version='{0}' union select distinct participant from opened_answer where version='{0}') t1 left join (select distinct questionid,participant from dce_answer where version='{0}') t2 on t1.participant=t2.participant left join (select distinct questionid,participant from tto_answer where version='{0}') t3 on t1.participant=t3.participant left join (select distinct questionid,participant from opened_answer where version='{0}') t4 on t1.participant=t4.participant".format(version)
+
+    result = cursor.execute(SQL_TEXT)
+    data = []
+
+    for row in result:
+        data.append({"participant": row[0],"DCE": row[1],"TTO": row[2],"Opened": row[3]})
+
+    return jsonify(data)
 
 @app.route("/api/upload", methods=["POST"])
 def upload_file():

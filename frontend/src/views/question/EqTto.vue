@@ -1,8 +1,8 @@
 <template>
   <v-container class="grey lighten-5" fluid>
     <v-card justify="center" align="center">
-      <v-card-title>
-        EQ TTO Demo
+      <v-card-title v-show="false">
+        EQ TTO
         <v-spacer></v-spacer>
         <span color="grey">总共用时： {{usedTime}}</span>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

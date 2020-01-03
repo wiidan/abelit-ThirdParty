@@ -114,11 +114,35 @@
           ></v-data-table>
         </v-col>
       </v-row>
+
+      <v-row>
+        <v-col cols="12">
+          <v-data-table
+            :headers="tablePHeaders"
+            :items="tablePData"
+            :items-per-page="10"
+            class="elevation-1"
+          >
+            <template v-slot:item.TTO="{ item }">
+              <v-icon small class="mr-2" color="primary" v-if="item.TTO > 0" @click="editItem(item)">remove_red_eye</v-icon>
+              <v-icon small v-if="item.TTO > 0" color="primary" @click="download(item.participant,item.TTO)">file_download</v-icon>
+            </template>
+            <template v-slot:item.DCE="{ item }">
+              <v-icon small class="mr-2" color="primary" v-if="item.DCE > 0" @click="editItem(item)">remove_red_eye</v-icon>
+              <v-icon small v-if="item.DCE > 0" color="primary" @click="download(item.participant,item.DCE)">file_download</v-icon>
+            </template>
+            <template v-slot:item.Opened="{ item }">
+              <v-icon small class="mr-2" color="primary" v-if="item.Opened > 0" @click="editItem(item)">remove_red_eye</v-icon>
+              <v-icon small v-if="item.Opened > 0" color="primary" @click="download(item.participant,item.Opened)">file_download</v-icon>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
     </div>
     <div v-if="type==0">
       <v-row justify="center" align="center" style="height: 500px;">
         <v-col cols="4">
-            <v-row >
+          <v-row>
             <v-subheader>设置题库版本</v-subheader>
             <v-select
               :items="questionTypes"
@@ -139,6 +163,7 @@
 
 <script>
 import questiontype from "@/assets/data/questiontype.json";
+import { mapState } from "vuex";
 export default {
   data: () => ({
     type: 1,
@@ -177,7 +202,7 @@ export default {
           //   }, 2000);
         })
         .catch(err => {
-          console.log(err)
+          console.log(err);
           console.log("failed");
         });
     },
@@ -202,7 +227,7 @@ export default {
       console.log(this.qversion);
       this.$axios
         .get(url, {
-          params: { block: "all", version: this.qversion || "all"}
+          params: { block: "all", version: this.qversion || "all" }
         })
         .then(res => {
           //   console.log(res.data)
@@ -211,14 +236,13 @@ export default {
           var objHeader = [];
           var objKey = Object.keys(objData[0]);
 
-  
           for (let i = 0; i < objKey.length; i++) {
             objHeader.push({
               text: objKey[i],
               value: objKey[i]
             });
           }
-  
+
           this.tableHeaders = objHeader;
           this.tableData = objData;
         })
@@ -246,7 +270,9 @@ export default {
       }
 
       this.$axios
-        .get(url)
+        .get(url, {
+          params: { version: this.qVersion }
+        })
         .then(res => {
           //   console.log(res.data)
           var objData = res.data;
@@ -290,7 +316,7 @@ export default {
 
       this.$axios
         .get(url, {
-          params: { block: "all"}
+          params: { block: "all" }
         })
         .then(res => {
           var objData = res.data;
@@ -308,7 +334,43 @@ export default {
         .catch(err => {
           console.log(err);
         });
-    }
+    },
+    getParticipant() {
+      let url = "/api/participant";
+      this.$axios
+        .get(url, {
+          params: { version: this.qVersion || "V17" }
+        })
+        .then(res => {
+          console.log(res.data);
+          var objData = res.data;
+
+          var objHeader = [];
+          var objKey = Object.keys(objData[0]);
+
+          for (let i = 0; i < objKey.length; i++) {
+            objHeader.push({
+              text: objKey[i],
+              value: objKey[i]
+            });
+          }
+          //   console.log(objHeader)
+          this.tablePHeaders = objHeader;
+          this.tablePData = objData;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    download(pid,qid) {
+      console.log({"participant": pid, "questionid": qid})
+    } 
+  },
+  computed: {
+    ...mapState(["qVersion"])
+  },
+  mounted() {
+    this.getParticipant();
   }
 };
 </script>
