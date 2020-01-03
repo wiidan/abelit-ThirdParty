@@ -5,6 +5,7 @@
       <v-tab @click="type = 2">手动填写</v-tab>
       <v-tab @click="type = 3;tableHeaders=[];tabledata=[];qtype=''">查看题库</v-tab>
       <v-tab @click="type = 4;tableHeaders=[];tabledata=[];qtype=''">查看答案</v-tab>
+      <v-tab @click="type = 5">版本设置</v-tab>
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
       <v-row>
@@ -114,6 +115,25 @@
         </v-col>
       </v-row>
     </div>
+    <div v-if="type==0">
+      <v-row justify="center" align="center" style="height: 500px;">
+        <v-col cols="4">
+            <v-row >
+            <v-subheader>设置题库版本</v-subheader>
+            <v-select
+              :items="questionTypes"
+              v-model="qtype"
+              item-value="id"
+              item-text="name"
+              label="选择版本"
+              outlined
+              dense
+            ></v-select>
+            <v-btn class="primary" large>设置</v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
@@ -156,7 +176,8 @@ export default {
           //       this.snackbar = false;
           //   }, 2000);
         })
-        .catch(error => {
+        .catch(err => {
+          console.log(err)
           console.log("failed");
         });
     },
@@ -181,7 +202,7 @@ export default {
       console.log(this.qversion);
       this.$axios
         .get(url, {
-          params: { block: "all", version: ""}
+          params: { block: "all", version: this.qversion || "all"}
         })
         .then(res => {
           //   console.log(res.data)

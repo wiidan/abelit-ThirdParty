@@ -4,11 +4,12 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 const state = {
-  examType: JSON.parse(localStorage.getItem("examType")) || "",
+  examType: JSON.parse(localStorage.getItem("examType")) || [],
   examStart: localStorage.getItem("examStart") || false,
-  userInfo: JSON.parse(localStorage.getItem("userInfo")) || "",
-  blocks: "",
-  allAnswer: JSON.parse(localStorage.getItem("allAnswer")) || ""
+  userInfo: JSON.parse(localStorage.getItem("userInfo")) || [],
+  blocks: [],
+  allAnswer: JSON.parse(localStorage.getItem("allAnswer")) || [],
+  qVersion: ""
 };
 
 const actions = {
@@ -26,6 +27,9 @@ const actions = {
   },
   setAllAnswer({ commit }, obj) {
     commit("setAllAnswer", obj);
+  },
+  setQuestionVersion({ commit }, obj) {
+    commit("setQuestionVersion", obj);
   }
 };
 
@@ -49,6 +53,10 @@ const mutations = {
   setAllAnswer: (state, obj) => {
     state.allAnswer = obj;
     localStorage.setItem("allAnswer", JSON.stringify(obj));
+  },
+  setQuestionVersion: (state, value) => {
+    state.qVersion = value;
+    localStorage.setItem("qVersion",value);
   }
 };
 

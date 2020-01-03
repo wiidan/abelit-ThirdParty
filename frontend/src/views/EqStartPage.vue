@@ -14,38 +14,84 @@
               </span>
             </v-col>
           </v-row>
+          <v-row justify="center">
+            <v-col cols="6" sm="2" class="display-1">
+              <v-select
+                :items="questionVersions"
+                v-model="qVersion"
+                item-value="version"
+                item-text="version"
+                label="选择版本"
+                outlined
+                dense
+                dark
+              ></v-select>
+            </v-col>
+          </v-row>
           <v-btn color="#0094ff" x-large height="72" dark class="mt-12" @click="startExam()">
             <span class="display-1">开始调查</span>
           </v-btn>
         </v-col>
       </v-row>
     </v-img>
-    <!-- <eq-user-info :interviewers="interviewers" :blockQuestions="blockQuestions" v-else></eq-user-info> -->
   </v-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
-// import EqUserInfo from "@/views/EqUserInfo";
 
 export default {
   name: "EqStartPage",
-  data: () => ({}),
+  data: () => ({
+    questionVersions: [],
+    qVersion: ""
+  }),
   components: {
     // EqUserInfo
   },
   methods: {
     startExam() {
+      this.getQuestionBlock(this.examType.id, this.qVersion);
+      this.$store.dispatch("setQuestionVersion", this.qVersion);
       this.$store.dispatch("setExamStart", true).then(() => {
         this.$router.push({ path: "/eq/user" });
       });
+    },
+    //从后台获取题库版本
+    getQuestionVerion() {
+      let url = "/api/question/version";
+      this.$axios
+        .get(url)
+        .then(res => {
+          console.log(res.data);
+          this.questionVersions = res.data;
+          this.qVersion = this.questionVersions[
+            this.questionVersions.length - 1
+          ].version;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getQuestionBlock(t, v) {
+      this.$axios
+        .get("/api/question/blocks", {
+          params: { type: t, version: v }
+        })
+        .then(res => {
+          console.log(res.data);
+          this.$store.dispatch("setBlocks", res.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   computed: {
     ...mapState(["examType", "examStart"])
   },
   mounted() {
-    console.log(this.examType);
+    this.getQuestionVerion();
   }
 };
 </script>

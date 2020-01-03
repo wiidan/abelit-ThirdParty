@@ -44,25 +44,12 @@ export default {
   methods: {
     saveExamType(value) {
       console.log(value);
-      this.getQuestionNum(value.id);
       this.$store.dispatch("setExamType", value).then(() => {
         // 跳转到指定页面
         this.$router.push({ path: "/eq" });
       });
     },
-    getQuestionNum(id) {
-      this.$axios
-        .get("/api/question/blocks", {
-          params: { type: id }
-        })
-        .then(res => {
-          console.log(res.data);
-          this.$store.dispatch("setBlocks", res.data);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
+
   }
 };
 </script>

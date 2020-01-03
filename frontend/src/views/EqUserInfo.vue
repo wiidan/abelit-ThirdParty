@@ -97,7 +97,7 @@ export default {
     getInterviewer() {
       this.$axios.get("/api/interviewer").then(res => {
         this.interviewerList = res.data;
-        console.log(this.interviewerList);
+        // console.log(this.interviewerList);
       });
     }
   },

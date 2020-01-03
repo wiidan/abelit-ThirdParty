@@ -14,7 +14,6 @@
 
 <script>
 import EqTto from "@/views/question/EqTto";
-// import dataEqttoquestion from "@/assets/data/eqttoquestion.json";
 import { mapState } from "vuex";
 
 export default {
@@ -35,11 +34,10 @@ export default {
     console.log("EQ tto Exam")
   },
   computed: {
-    ...mapState(["userInfo"])
+    ...mapState(["userInfo","qVersion"])
   },
   methods: {
     pUpdateItem(data) {
-      // console.log(this.currentItem + "--->" + this.eqTtoQuestions[this.currentItem].source_text)
       this.ttoAnswers.push(data);
       console.log(this.ttoAnswers)
       this.currentItem++;
@@ -54,7 +52,7 @@ export default {
       // console.log(this.userInfo.blockQuestion);
       this.$axios
         .get("/api/question/tto", {
-          params: { block: this.userInfo.blockQuestion }
+          params: { block: this.userInfo.blockQuestion , version: this.qVersion}
         })
         .then(res => {
           this.eqTtoQuestions = res.data;

@@ -63,7 +63,7 @@ export default {
   },
   mounted() {},
   computed: {
-    ...mapState(["userInfo","examType"])
+    ...mapState(["userInfo","examType","qVersion"])
   },
   methods: {
     nextBtn() {
@@ -110,12 +110,9 @@ export default {
     getdceQuestion() {
       this.$axios
         .get("/api/question/dce", {
-          params: { block: this.userInfo.blockQuestion }
+          params: { block: this.userInfo.blockQuestion, version: this.qVersion }
         })
         .then(res => {
-          //   this.dceQuestion = res.data;
-          // console.log(res.data);
-          // console.log(this.randomNum(1,2))
           var arrKey = [];
           var arrTemp = [];
           for (let i = 0; i < res.data.length; i++) {

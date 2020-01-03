@@ -81,7 +81,7 @@ export default {
     getoeqQuestion() {
       this.$axios
         .get("/api/question/open", {
-          params: { block: "A" }
+          params: { block: "A", version: this.qVersion }
         })
         .then(res => {
           this.oeqQuestion = res.data;
@@ -93,7 +93,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["userInfo","examType"])
+    ...mapState(["userInfo","examType","qVersion"])
   }
 };
 </script>
