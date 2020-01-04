@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'xls', 'xlsx'}
+ALLOWED_EXTENSIONS = {'xls', 'xlsx'}
 UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'data')
 app.config['UPLOAD_PATH'] = UPLOAD_PATH
 
@@ -540,6 +540,50 @@ def get_all_participant():
 
     return jsonify(data)
 
+@app.route("/api/question/delete", methods=['POST'])
+def delete_question():
+    # 连接数据库
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+
+    version = request.get_json()["version"]
+    questionid = request.get_json()["questionid"]
+
+    print(version)
+    print(questionid)
+
+    status = None
+    msg = None
+
+    TABLE_NAME = ""
+    SQL_TEXT = "delete from {0} where version='{1}'"
+
+    if questionid == 1:
+        TABLE_NAME = "dce_question"
+    elif questionid == 2:
+        TABLE_NAME = "tto_question"
+    elif questionid == 3:
+        TABLE_NAME = "ttofeedback_question"
+    elif questionid == 4:
+        TABLE_NAME = "opened_question"
+    
+    SQL_TEXT = SQL_TEXT.format(TABLE_NAME, version)
+
+    try:
+        cursor.execute(SQL_TEXT)
+        conn.commit()
+
+        status = 200
+        msg = "ok"
+    except Exception as err:
+        msg = "error"
+        status = 600
+        conn.rollback()
+    finally:
+        conn.close()
+
+    return jsonify({"msg": msg, "status": status})
+
 @app.route("/api/upload", methods=["POST"])
 def upload_file():
     if request.method == 'POST':
@@ -560,28 +604,38 @@ def upload_file():
             conn = sqlite3.connect('question.db', check_same_thread=False)
             cursor = conn.cursor()
 
-            # TTO & TTO-Feedback Question
-            for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
-                cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-                    data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
-            conn.commit()
+            msg = ""
+            status = ""
 
-            # DCE Question
-            for data in readexcel.read(filepath, 'DCE', True):
-                cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-                    data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
-            conn.commit()
+            try:
+                # TTO & TTO-Feedback Question
+                for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
+                    cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+                        data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
 
-            # Open ended Question
-            for data in readexcel.read(filepath, 'Open ended questions', True):
-                cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
-                    data[5],data[0], data[1], data[2], data[3], data[4]))
-            conn.commit()
+                # DCE Question
+                for data in readexcel.read(filepath, 'DCE', True):
+                    cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+                        data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+
+                # Open ended Question
+                for data in readexcel.read(filepath, 'Open ended questions', True):
+                    cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
+                        data[5],data[0], data[1], data[2], data[3], data[4]))
+                conn.commit()
+                msg = "ok"
+                status = 200
+            except:
+                conn.rollback()
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+                msg = "failed"
+                status = 500
+            
 
     return jsonify({
-        "status": 200,
-        "filename": filename,
-        "msg": "ok"
+        "status": status,
+        "msg": msg
     })
 
 

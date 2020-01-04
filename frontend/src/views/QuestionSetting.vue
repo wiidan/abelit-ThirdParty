@@ -71,6 +71,7 @@
         </v-col>
         <v-col cols="3" class="pa-8">
           <v-btn color="primary" dark @click="getQuestion">查询</v-btn>
+          <v-btn color="error" dark @click="deleteQuestion" class="ml-5">删除题库</v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -387,6 +388,7 @@ export default {
       // console.log(this.qtype);
     },
     getQuestionVersion() {
+      this.questionVersions = [];
       var url;
       switch (this.qtype) {
         case 1:
@@ -538,10 +540,33 @@ export default {
           adminpwd: this.adminpwd
         })
         .then(res => {
-          alert(res.data.msg)
+          alert(res.data.msg);
         })
         .catch(err => {
-          console.log(err)
+          console.log(err);
+        });
+    },
+    deleteQuestion() {
+      let url = "/api/question/delete";
+      if (this.qversion == "") {
+        alert("请选择题库版本号！");
+        return false;
+      }
+      if (this.qtype == "") {
+        alert("请选择题库类型！");
+        return false;
+      }
+
+      this.$axios
+        .post(url, {
+          questionid: this.qtype,
+          version: this.qversion
+        })
+        .then(res => {
+          console.log(res.data);
+        })
+        .catch(err => {
+          console.log(err);
         });
     }
   },
