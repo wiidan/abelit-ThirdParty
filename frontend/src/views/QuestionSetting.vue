@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <v-tabs background-color="primary" center-active dark>
-      <v-tab @click="type = 1">上传题库</v-tab>
-      <v-tab @click="type = 2">手动填写</v-tab>
-      <v-tab @click="type = 3;tableHeaders=[];tabledata=[];qtype=''">题库</v-tab>
-      <v-tab @click="type = 4;tableHeaders=[];tabledata=[];qtype=''">答案</v-tab>
-      <v-tab @click="type = 5">版本设置</v-tab>
-      <v-tab @click="type = 6">数据初始化</v-tab>
+    <v-tabs background-color="#036f90" center-active dark>
+      <v-tab @click="type = 1" class="title">上传题库</v-tab>
+      <v-tab @click="type = 2" class="title">手动填写</v-tab>
+      <v-tab @click="type = 3; tableHeaders=[]; tabledata=[]; qtype=''" class="title">题库</v-tab>
+      <v-tab @click="type = 4; tableHeaders=[]; tabledata=[]; qtype=''" class="title">答案</v-tab>
+      <v-tab @click="type = 5" class="title">版本设置</v-tab>
+      <v-tab @click="type = 6" class="title">数据初始化</v-tab>
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
       <v-row justify="center">
