@@ -3,24 +3,19 @@
     <v-tabs background-color="primary" center-active dark>
       <v-tab @click="type = 1">上传题库</v-tab>
       <v-tab @click="type = 2">手动填写</v-tab>
-      <v-tab @click="type = 3;tableHeaders=[];tabledata=[];qtype=''">查看题库</v-tab>
-      <v-tab @click="type = 4;tableHeaders=[];tabledata=[];qtype=''">查看答案</v-tab>
+      <v-tab @click="type = 3;tableHeaders=[];tabledata=[];qtype=''">题库</v-tab>
+      <v-tab @click="type = 4;tableHeaders=[];tabledata=[];qtype=''">答案</v-tab>
       <v-tab @click="type = 5">版本设置</v-tab>
-      <v-tab @click="type = 6">数据库初始化</v-tab>
+      <v-tab @click="type = 6">数据初始化</v-tab>
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
-      <v-row>
-        <v-col cols="12">
+      <v-row justify="center">
+        <v-col cols="12" sm="6">
           <v-row class="px-10">
             <v-subheader>上传题库</v-subheader>
-            <v-file-input v-model="file" label="选择文件" :show-size="1000" outlined></v-file-input>
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-row justify="end" class="px-10">
-            <v-btn color="primary" @click="uploadFile">上传</v-btn>
+            <v-file-input v-model="file" label="选择文件" :show-size="1000" outlined dense></v-file-input>
+            <v-btn color="primary" @click="uploadFile" class="ml-5">上传</v-btn>
+            <v-btn color="primary" @click="downloadExampleFile" class="ml-5">下载问题设计样本</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -88,7 +83,7 @@
 
     <div v-if="type==4">
       <v-row>
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <v-row>
             <v-subheader>版本</v-subheader>
             <v-select
@@ -98,7 +93,9 @@
               item-text="version"
               label="选择版本号"
               outlined
+              dense
             ></v-select>
+            <v-btn class="ml-5" color="primary" @click="getParticipant">查询</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -257,13 +254,19 @@ export default {
     questionVersions: [],
     qtype: "",
     qversion: "",
-    answerVersions: [{ version: "V17" }],
+    answerVersions: [
+      { version: "V17" },
+      { version: "V18" },
+      { version: "V19" }
+    ],
     aversion: "",
     tableHeaders: [],
     tableData: [],
     dialog: false,
     tableAHeaders: [],
-    tableAData: []
+    tableAData: [],
+    tablePHeaders: [],
+    tablePData: []
   }),
   methods: {
     uploadFile() {
@@ -429,10 +432,12 @@ export default {
         });
     },
     getParticipant() {
+      this.tablePHeaders = [];
+      this.tablePData = [];
       let url = "/api/participant";
       this.$axios
         .get(url, {
-          params: { version: this.qVersion || "V17" }
+          params: { version: this.aversion }
         })
         .then(res => {
           console.log(res.data);
@@ -568,13 +573,44 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    getAnswerVersion() {
+      this.answerVersions = [];
+      let url = "/api/answer/version";
+      this.$axios
+        .get(url)
+        .then(res => {
+          this.answerVersions = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    downloadExampleFile() {
+      let url = "/download/questions.xlsx/";
+      this.$axios
+        .get(url, { responseType: "blob" })
+        .then(res => {
+          console.log(res.headers["Content-Disposition"]);
+          const url = window.URL.createObjectURL(new Blob([res.data]));
+          const link = document.createElement("a");
+          link.href = url;
+
+          link.setAttribute("download", "questions.xlsx");
+          document.body.appendChild(link);
+          link.click();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   },
   computed: {
     ...mapState(["qVersion"])
   },
   mounted() {
-    this.getParticipant();
+    // this.getParticipant();
+    this.getAnswerVersion();
   }
 };
 </script>

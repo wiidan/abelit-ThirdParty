@@ -58,12 +58,12 @@ export default {
   }),
   created() {
     this.getdceQuestion();
-    this.randNum = this.randomNum(1,2);
-    console.log(this.randNum)
+    this.randNum = this.randomNum(1, 2);
+    console.log(this.randNum);
   },
   mounted() {},
   computed: {
-    ...mapState(["userInfo","examType","qVersion"])
+    ...mapState(["userInfo", "examType", "qVersion"])
   },
   methods: {
     nextBtn() {
@@ -78,7 +78,7 @@ export default {
         this.$router.push({ path: "/eq/end" });
       }
 
-      if (this.randNum ==1){
+      if (this.randNum == 1) {
         this.dceReversal = "NORMAL";
       } else {
         this.dceReversal = "NONORMAL";
@@ -93,7 +93,7 @@ export default {
         selected_state: this.selectedAnswer,
         dce_reversal: this.dceReversal,
         block: this.userInfo.blockQuestion,
-        version: "V17"
+        version: this.qVersion
       };
 
       this.dceAnswers.push(answerObj);

@@ -9,26 +9,38 @@ const state = {
   userInfo: JSON.parse(localStorage.getItem("userInfo")) || [],
   blocks: [],
   allAnswer: JSON.parse(localStorage.getItem("allAnswer")) || [],
-  qVersion: ""
+  qVersion: localStorage.getItem("qVersion") || ""
 };
 
 const actions = {
-  setExamType({ commit }, obj) {
+  setExamType({
+    commit
+  }, obj) {
     commit("setExamType", obj);
   },
-  setExamStart({ commit }, value) {
+  setExamStart({
+    commit
+  }, value) {
     commit("setExamStart", value);
   },
-  setUserInfo({ commit }, obj) {
+  setUserInfo({
+    commit
+  }, obj) {
     commit("setUserInfo", obj);
   },
-  setBlocks({ commit }, obj) {
+  setBlocks({
+    commit
+  }, obj) {
     commit("setBlocks", obj);
   },
-  setAllAnswer({ commit }, obj) {
+  setAllAnswer({
+    commit
+  }, obj) {
     commit("setAllAnswer", obj);
   },
-  setQuestionVersion({ commit }, obj) {
+  setQuestionVersion({
+    commit
+  }, obj) {
     commit("setQuestionVersion", obj);
   }
 };
@@ -56,7 +68,7 @@ const mutations = {
   },
   setQuestionVersion: (state, value) => {
     state.qVersion = value;
-    localStorage.setItem("qVersion",value);
+    localStorage.setItem("qVersion", value);
   }
 };
 

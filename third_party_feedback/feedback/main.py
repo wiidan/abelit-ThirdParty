@@ -1,5 +1,5 @@
 # coding:utf8
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, send_file, make_response
 from flask_cors import CORS
 import sqlite3
 import os
@@ -32,7 +32,6 @@ def init_db():
 
     password = request.get_json()['adminpwd']
 
-
     if not password or password != app.config['adminpwd']:
         return jsonify({"status": 400, "msg": "密码错误"})
 
@@ -54,10 +53,12 @@ def init_db():
                 "create table eq_question_version(id integer primary key autoincrement, version text, created_timestamp timestamp default current_timestamp)",
                 "create table eq_label(id integer primary key autoincrement,questionid integer, reference_id text,slide text,presentation text,en_source_text text,zh_source_text text,version text,created_timestamp timestamp default  current_timestamp)",
                 "create table tto_question(id integer primary key autoincrement,questionid integer, presentation text,type text, name text,block integer,source_text text,version text,created_timestamp timestamp default current_timestamp)",
+                "create table ttofeedback_question(id integer primary key autoincrement,questionid integer, presentation text,type text, name text,block integer,source_text text,version text,created_timestamp timestamp default current_timestamp)",
                 "create table dce_question(id integer primary key autoincrement,questionid integer,presentation text,name integer,block integer,answer text,source_text text, version text,created_timestamp timestamp default current_timestamp)",
                 "create table opened_question(id integer primary key autoincrement,questionid integer,presentation text,name text,block text,source_text text, version text, created_timestamp timestamp default current_timestamp)",
                 "create table dce_answer(id integer primary key autoincrement,questionid integer,participant integer,interviewer text,item integer, position_of_item integer,selected_state text,dce_reversal text,block integer, version text,created_timestamp timestamp default current_timestamp)",
                 "create table tto_answer(id integer primary key autoincrement,questionid integer, participant integer, interviewer text,item text,position_of_item integer,tto_value real,used_time text,composite_switches interger,resets integer,number_of_moves integer,block text,version text,created_timestamp timestamp default current_timestamp)",
+                "create table ttofeedback_answer(id integer primary key autoincrement,questionid integer, participant integer, interviewer text,item text,position_of_item integer,tto_value real,used_time text,composite_switches interger,resets integer,number_of_moves integer,block text,version text,created_timestamp timestamp default current_timestamp)",
                 "create table opened_answer(id integer primary key autoincrement,questionid integer, participant integer,interviewer text,item text,position_of_item integer,participant_answer text,block text, version text,created_timestamp timestamp default current_timestamp)"]
 
     for sql in SQL_TEXT:
@@ -71,29 +72,29 @@ def init_db():
     conn.commit()
 
     # EQ Label
-    for item in ["TTO","TTO-Feedback", "DCE", "Open ended questions"]:
-        for data in readexcel.read('./data/eqlabels.xlsx', item , True):
+    for item in ["TTO", "TTO-Feedback", "DCE", "Open ended questions"]:
+        for data in readexcel.read('./data/eqlabels.xlsx', item, True):
             cursor.execute(
-                "insert into eq_label(questionid,reference_id,slide,presentation,en_source_text,zh_source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}','{6}')".format(data[5],data[0], data[1],data[2],data[3],data[4],data[6]))
+                "insert into eq_label(questionid,reference_id,slide,presentation,en_source_text,zh_source_text,version) values('{0}','{1}','{2}','{3}','{4}','{5}','{6}')".format(data[5], data[0], data[1], data[2], data[3], data[4], data[6]))
         conn.commit()
 
-    # TTO & TTO-Feedback Question
-    for data in readexcel.read('./data/questions.xlsx', 'TTO & TTO-Feedback', True):
-        cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-            data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
-    conn.commit()
+    # # TTO & TTO-Feedback Question
+    # for data in readexcel.read('./data/questions.xlsx', 'TTO & TTO-Feedback', True):
+    #     cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+    #         data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+    # conn.commit()
 
-    # DCE Question
-    for data in readexcel.read('./data/questions.xlsx', 'DCE', True):
-        cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-            data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
-    conn.commit()
+    # # DCE Question
+    # for data in readexcel.read('./data/questions.xlsx', 'DCE', True):
+    #     cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+    #         data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+    # conn.commit()
 
-    # Open ended Question
-    for data in readexcel.read('./data/questions.xlsx', 'Open ended questions', True):
-        cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
-            data[5],data[0], data[1], data[2], data[3], data[4]))
-    conn.commit()
+    # # Open ended Question
+    # for data in readexcel.read('./data/questions.xlsx', 'Open ended questions', True):
+    #     cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
+    #         data[5],data[0], data[1], data[2], data[3], data[4]))
+    # conn.commit()
 
     result = cursor.execute(all_table_text)
     table_list = []
@@ -112,6 +113,28 @@ def get_question_version():
     cursor = conn.cursor()
 
     SQL_TEXT = "select distinct version from dce_question union select distinct version from tto_question union select distinct version from opened_question"
+
+    result = cursor.execute(SQL_TEXT)
+
+    data = []
+
+    for row in result:
+        data.append({
+            "version": row[0]
+        })
+
+    return jsonify(data)
+
+
+@app.route("/api/answer/version")
+def get_answer_version():
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+
+    SQL_TEXT = """select distinct version from dce_answer 
+    union select distinct version from tto_answer 
+    union select distinct version from opened_answer 
+    union select distinct version from ttofeedback_answer"""
 
     result = cursor.execute(SQL_TEXT)
 
@@ -152,6 +175,7 @@ def add_question_version():
 
     return jsonify({"msg": msg, "status": status})
 
+
 @app.route("/api/interviewer")
 def get_interviewer():
     conn = sqlite3.connect('question.db', check_same_thread=False)
@@ -171,9 +195,10 @@ def get_interviewer():
 
     return jsonify(data)
 
+
 @app.route("/api/eqlabel")
 def get_eqlabel():
-    questionid  = request.args.get('questionid')
+    questionid = request.args.get('questionid')
     version = request.args.get('version')
 
     conn = sqlite3.connect('question.db', check_same_thread=False)
@@ -203,7 +228,7 @@ def get_eqlabel():
 
     for row in result:
         data.append({"id": row[0], "questionid": row[1], "reference_id": row[2], "slide": row[3], "presentation": row[4],
-                     "en_source_text": row[5], "zh_source_text": row[6],"version": row[7], "created_timestamp": row[8]})
+                     "en_source_text": row[5], "zh_source_text": row[6], "version": row[7], "created_timestamp": row[8]})
 
     return jsonify(data)
 
@@ -212,10 +237,6 @@ def get_eqlabel():
 def get_tto_question():
     block = request.args.get('block')
     version = request.args.get('version')
-    # print("-----")
-    # print(version == "")
-    # print(version)
-    # print("******")
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
@@ -224,15 +245,54 @@ def get_tto_question():
 
     if block is not None:
         if block != "all":
-            if re.search(r'select (.*) from (.*) where (.*)',SQL_TEXT.lower()) is None:
-                SQL_TEXT = SQL_TEXT + " " + "where (block='-' or block='{0}')".format(block)
-            else: 
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
                 SQL_TEXT = SQL_TEXT + " " + \
-                     "and (block='-' or block='{0}')".format(block)
+                    "where (block='-' or block='{0}')".format(block)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "and (block='-' or block='{0}')".format(block)
     if version is not None:
         if version != "all":
-            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is  None:
-                SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where version='{0}'".format(version)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + "and version='{0}'".format(version)
+
+    result = cursor.execute(SQL_TEXT)
+
+    data = []
+
+    for row in result:
+        data.append({"id": row[0], "presentation": row[1], "type": row[2],
+                     "name": row[3], "block": row[4], "source_text": row[5], "version": row[6], "created_timestamp": row[7], "questionid": row[8]})
+
+    return jsonify(data)
+
+
+@app.route("/api/question/ttofeedback")
+def get_ttofeedback_question():
+    block = request.args.get('block')
+    version = request.args.get('version')
+    # 连接数据库
+    conn = sqlite3.connect('question.db', check_same_thread=False)
+    cursor = conn.cursor()
+
+    SQL_TEXT = "select id,presentation,type,name,block,source_text,version,created_timestamp,questionid from ttofeedback_question"
+
+    if block is not None:
+        if block != "all":
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where (block='-' or block='{0}')".format(block)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "and (block='-' or block='{0}')".format(block)
+    if version is not None:
+        if version != "all":
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where version='{0}'".format(version)
             else:
                 SQL_TEXT = SQL_TEXT + " " + "and version='{0}'".format(version)
 
@@ -530,15 +590,24 @@ def get_all_participant():
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select t1.participant,t2.questionid,t3.questionid,t4.questionid from (select distinct participant from dce_answer where version='{0}' union select distinct participant from tto_answer where version='{0}' union select distinct participant from opened_answer where version='{0}') t1 left join (select distinct questionid,participant from dce_answer where version='{0}') t2 on t1.participant=t2.participant left join (select distinct questionid,participant from tto_answer where version='{0}') t3 on t1.participant=t3.participant left join (select distinct questionid,participant from opened_answer where version='{0}') t4 on t1.participant=t4.participant".format(version)
+    SQL_TEXT = """select t1.participant,t2.questionid,t3.questionid,t4.questionid,t5.questionid from (select distinct participant from dce_answer where version='{0}' 
+                union select distinct participant from tto_answer where version='{0}' 
+                union select distinct participant from ttofeedback_answer where version='{0}'
+                union select distinct participant from opened_answer where version='{0}') t1 
+                left join (select distinct questionid,participant from dce_answer where version='{0}') t2 on t1.participant=t2.participant 
+                left join (select distinct questionid,participant from tto_answer where version='{0}') t3 on t1.participant=t3.participant 
+                left join (select distinct questionid,participant from ttofeedback_answer where version='{0}') t4 on t1.participant=t4.participant
+                left join (select distinct questionid,participant from opened_answer where version='{0}') t5 on t1.participant=t5.participant""".format(version)
 
     result = cursor.execute(SQL_TEXT)
     data = []
 
     for row in result:
-        data.append({"participant": row[0],"DCE": row[1],"TTO": row[2],"Opened": row[3]})
+        data.append({"participant": row[0], "DCE": row[1],
+                     "TTO": row[2], "TTO_Feedback": row[3], "Opened": row[4]})
 
     return jsonify(data)
+
 
 @app.route("/api/question/delete", methods=['POST'])
 def delete_question():
@@ -566,7 +635,7 @@ def delete_question():
         TABLE_NAME = "ttofeedback_question"
     elif questionid == 4:
         TABLE_NAME = "opened_question"
-    
+
     SQL_TEXT = SQL_TEXT.format(TABLE_NAME, version)
 
     try:
@@ -584,22 +653,25 @@ def delete_question():
 
     return jsonify({"msg": msg, "status": status})
 
+
 @app.route("/api/upload", methods=["POST"])
 def upload_file():
     if request.method == 'POST':
         file = request.files.get('file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            
-            #获取文件后缀
-            file_suffix = filename.rsplit('.',1)[1].lower()
-            file_realname = filename.rsplit('.',1)[0].lower()
 
-            filename = file_realname + str(time.strftime("%Y%m%d%H%M%S", time.localtime())) +'.' + file_suffix
+            # 获取文件后缀
+            file_suffix = filename.rsplit('.', 1)[1].lower()
+            file_realname = filename.rsplit('.', 1)[0].lower()
+
+            filename = file_realname + \
+                str(time.strftime("%Y%m%d%H%M%S", time.localtime())) + \
+                '.' + file_suffix
             file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
-            print(os.path.join(app.config['UPLOAD_PATH'],filename))
+            print(os.path.join(app.config['UPLOAD_PATH'], filename))
 
-            filepath = os.path.join(app.config['UPLOAD_PATH'],filename)
+            filepath = os.path.join(app.config['UPLOAD_PATH'], filename)
             # 连接数据库
             conn = sqlite3.connect('question.db', check_same_thread=False)
             cursor = conn.cursor()
@@ -608,20 +680,25 @@ def upload_file():
             status = ""
 
             try:
-                # TTO & TTO-Feedback Question
+                # TTO
                 for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
                     cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-                        data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+                        data[6], data[0], data[1], data[2], data[3], data[4], data[5]))
+
+                # TTO-Feedback Question
+                for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
+                    cursor.execute("insert into ttofeedback_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+                        data[6], data[0], data[1], data[2], data[3], data[4], data[5]))
 
                 # DCE Question
                 for data in readexcel.read(filepath, 'DCE', True):
                     cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
-                        data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+                        data[6], data[0], data[1], data[2], data[3], data[4], data[5]))
 
                 # Open ended Question
                 for data in readexcel.read(filepath, 'Open ended questions', True):
                     cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
-                        data[5],data[0], data[1], data[2], data[3], data[4]))
+                        data[5], data[0], data[1], data[2], data[3], data[4]))
                 conn.commit()
                 msg = "ok"
                 status = 200
@@ -631,7 +708,6 @@ def upload_file():
                     os.remove(filepath)
                 msg = "failed"
                 status = 500
-            
 
     return jsonify({
         "status": status,
@@ -640,10 +716,23 @@ def upload_file():
 
 
 # 访问上传的文件
-# http://localhost:5000/uploadfiles/<filename>.jpg/png/pdf
-@app.route('/uploadfiles/<filename>/', methods=['GET', 'POST'])
+# http://localhost:5000/download/<filename>.xlsx
+@app.route('/download/<filename>/')
 def get_file(filename):
-    return send_from_directory(app.config['UPLOAD_PATH'], filename)
+    filepath = os.path.join(app.config['UPLOAD_PATH'], filename)
+    if os.path.isfile(filepath):
+        response = make_response(send_from_directory(
+            app.config['UPLOAD_PATH'], filename, as_attachment=True))
+        response.headers["content-disposition"] = "attachment; filename={}".format(
+            filename)
+
+        return response
+
+# @app.after_request
+# def after_request(response):
+#     if str(request.path).startswith('/download/'):
+#         response.headers['Content-Disposition'] = 'attachment'
+#     return response
 
 
 def allowed_file(filename):

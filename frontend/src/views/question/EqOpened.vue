@@ -59,13 +59,13 @@ export default {
         position_of_item: this.step + 1,
         participant_answer: this.inputAnswer,
         block: "A",
-        version: "V17"
+        version: this.qVersion
       };
 
       this.openedAnswers.push(answerOjb);
-      console.log(this.openedAnswers)
-      console.log(this.userInfo)
-      console.log(this.examType)
+      console.log(this.openedAnswers);
+      console.log(this.userInfo);
+      console.log(this.examType);
 
       if (this.step + 1 < this.oeqQuestion.length) {
         this.step++;
@@ -74,7 +74,6 @@ export default {
         alert("回答完毕");
         this.$store.dispatch("setAllAnswer", this.openedAnswers);
         this.$router.push({ path: "/eq/end" });
-
       }
       this.inputAnswer = "";
     },
@@ -93,7 +92,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(["userInfo","examType","qVersion"])
+    ...mapState(["userInfo", "examType", "qVersion"])
   }
 };
 </script>

@@ -436,7 +436,7 @@ export default {
           resets: this.resets,
           number_of_moves: this.step,
           block: this.block.block,
-          version: "V17"
+          version: this.qVersion
         };
         this.ttoAnswer = answerObj;
 
@@ -674,7 +674,7 @@ export default {
         return arr;
       };
     },
-    ...mapState(["userInfo", "examType"])
+    ...mapState(["userInfo", "examType", "qVersion"])
   }
 };
 </script>
