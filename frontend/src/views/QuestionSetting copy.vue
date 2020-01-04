@@ -6,7 +6,6 @@
       <v-tab @click="type = 3;tableHeaders=[];tabledata=[];qtype=''">查看题库</v-tab>
       <v-tab @click="type = 4;tableHeaders=[];tabledata=[];qtype=''">查看答案</v-tab>
       <v-tab @click="type = 5">版本设置</v-tab>
-      <v-tab @click="type = 6">数据库初始化</v-tab>
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
       <v-row>
@@ -45,7 +44,6 @@
                 item-text="name"
                 label="选题题型"
                 outlined
-                dense
                 @change="getQuestionVersion"
               ></v-select>
             </v-col>
@@ -64,13 +62,14 @@
                 item-text="version"
                 label="选择版本号"
                 outlined
-                dense
               ></v-select>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="3" class="pa-8">
-          <v-btn color="primary" dark @click="getQuestion">查询</v-btn>
+          <v-btn color="primary" @click="getQuestion" large>
+            <v-icon>search</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -170,12 +169,6 @@
               <v-btn icon dark @click="dialog = false">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
-              <v-spacer></v-spacer>
-              <v-icon
-                icon
-                dark
-                @click="downloadAnswer(tableAData[0].participant,tableAData[0].questionid)"
-              >file_download</v-icon>
               <v-toolbar-title></v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -214,29 +207,6 @@
         </v-col>
       </v-row>
     </div>
-    <div v-if="type == 6">
-      <v-row justify="center" class="mt-12">
-        <v-col cols="12" sm="4">
-          <v-text-field
-            v-model="adminpwd"
-            label="请输入管理员密码"
-            type="password"
-            prepend-inner-icon="lock"
-            outlined
-            required
-            dense
-            solo
-            flat
-          >
-            <template v-slot:append-outer>
-              <v-btn outlined height="41" dense color="amber" @click="initdb">
-                <span>初始化</span>
-              </v-btn>
-            </template>
-          </v-text-field>
-        </v-col>
-      </v-row>
-    </div>
   </v-container>
 </template>
 
@@ -247,7 +217,6 @@ import XLSX from "xlsx";
 
 export default {
   data: () => ({
-    adminpwd: "",
     type: 1,
     file: [],
     msg: "",
@@ -294,8 +263,6 @@ export default {
         });
     },
     getQuestion() {
-      this.tableHeaders = [];
-      this.tableData = [];
       var url;
       switch (this.qtype) {
         case 1:
@@ -311,7 +278,7 @@ export default {
           url = "/api/question/open";
           break;
         default:
-          alert("请选择题库类型");
+          alert("题型不存在");
       }
       console.log(this.qversion);
       this.$axios
@@ -339,7 +306,7 @@ export default {
           console.log(err);
         });
     },
-    async getAnswer(type, version, participant) {
+    getAnswer(type, version, participant) {
       var url;
       console.log(type);
       switch (type) {
@@ -356,10 +323,10 @@ export default {
           url = "/api/answer/open";
           break;
         default:
-          alert("请选择题库类型！");
+          alert("题型不存在");
       }
 
-      await this.$axios
+      this.$axios
         .get(url, {
           params: { version: version, participant: participant }
         })
@@ -453,96 +420,72 @@ export default {
           console.log(err);
         });
     },
-    async downloadAnswer(pid, qid) {
-      if (this.aversion == "") {
-        alert("请选择版本号！");
-        return false;
-      }
+    async downloadAnswer(pid, qid,version) {
+      console.log({
+        participant: pid,
+        questionid: qid,
+        aversion: version
+      });
 
-      await this.getAnswer(qid, this.aversion, pid);
-
-      console.log("I am downloadAnswer");
-      var filename;
-      var questionName;
-      var answerTime;
-
+      var url;
+      console.log(qid);
       switch (qid) {
         case 1:
-          questionName = "DCE";
+          url = "/api/answer/dce";
           break;
         case 2:
-          questionName = "TTO";
+          url = "/api/answer/tto";
           break;
         case 3:
-          questionName = "TTO Feedback";
+          url = "/api/answer/ttofeedback";
           break;
         case 4:
-          questionName = "Open end questions";
+          url = "/api/answer/open";
           break;
         default:
-          questionName = "unkonwn";
+          alert("题型不存在");
       }
 
-      answerTime = this.tableAData[0].created_timestamp;
+      this.$axios
+        .get(url, {
+          params: { version: version, participant: pid }
+        })
+        .then(res => {
+          //   console.log(res.data)
+          var objData = res.data;
 
-      let syear = new Date(answerTime).getFullYear();
-      let smonth = new Date(answerTime).getMonth();
-      let sdate = new Date(answerTime).getDate();
-      let shour = new Date(answerTime).getHours();
+          var objHeader = [];
+          var objKey = Object.keys(objData[0]);
 
-      smonth = smonth + 1;
-      if (smonth < 10) {
-        smonth = "0" + smonth.toString();
-      }
+          for (let i = 0; i < objKey.length; i++) {
+            objHeader.push({
+              text: objKey[i],
+              value: objKey[i]
+            });
+          }
+          //   console.log(objHeader)
+          this.tableAHeaders = objHeader;
+          this.tableAData = objData;
+          console.log("I am getAnswer function.");
 
-      if (sdate < 10) {
-        sdate = "0" + sdate.toString();
-      }
-
-      if (shour < 10) {
-        shour = "0" + shour.toString();
-      }
-
-      filename =
-        questionName +
-        "_" +
-        this.aversion +
-        "_" +
-        pid +
-        "_" +
-        syear.toString() +
-        smonth.toString() +
-        sdate.toString() +
-        shour.toString();
-      console.log(filename);
+          console.log("foobar");
+      console.log("I am downloadAnswer");
       var exportData = XLSX.utils.json_to_sheet(this.tableAData);
       var wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, exportData, questionName + " Answer");
-      XLSX.writeFile(wb, filename + ".xlsx");
+      XLSX.utils.book_append_sheet(wb, exportData, "export_data");
+      XLSX.writeFile(wb, "demo.xlsx");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+
+      
     },
     viewDetailAnswer(pid, qid) {
-      if (this.aversion == "") {
-        alert("请选择版本号！");
-        return false;
-      }
-
       this.dialog = true;
       console.log({ participant: pid, questionid: qid });
       this.getAnswer(qid, this.aversion, pid);
-    },
-    initdb() {
-      let url = "/admin/initdb";
-      console.log(this.adminpwd);
-      this.$axios
-        .post(url, {
-          adminpwd: this.adminpwd
-        })
-        .then(res => {
-          alert(res.data.msg)
-        })
-        .catch(err => {
-          console.log(err)
-        });
     }
   },
   computed: {
@@ -554,8 +497,3 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.v-input__append-outer {
-  margin: 0 !important;
-}
-</style>

@@ -6,31 +6,35 @@ import os
 import re
 import readexcel
 import json
+import time
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'xls', 'xlsx'}
-UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'uploadfiles')
+UPLOAD_PATH = os.path.join(os.path.dirname(__file__), 'data')
 app.config['UPLOAD_PATH'] = UPLOAD_PATH
+
+app.config['adminpwd'] = "Passw0rd123!"
 
 # 跨域设置
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
-@app.route('/initdb', methods=['POST', 'GET'])
+@app.route('/admin/initdb', methods=['POST', 'GET'])
 def init_db():
     if request.method == 'GET':
-        return '''<form action="/initdb" method="post">
+        return '''<form action="/admin/initdb" method="post">
   密码: <input type="password" name="pwd" />
   <input type="submit" value="初始化" />
 </form>'''
 
-    password = request.form.get("pwd")
+    password = request.get_json()['adminpwd']
 
-    if not password or password != 'abelit':
-        return jsonify({"status": 400, "msg": "请输入密码"})
+
+    if not password or password != app.config['adminpwd']:
+        return jsonify({"status": 400, "msg": "密码错误"})
 
     os.remove('question.db')
 
@@ -384,12 +388,17 @@ def add_tto_answer():
 
 @app.route("/api/answer/tto")
 def get_tto_answer():
+    version = request.args.get('version')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
     SQL_TEXT = "select * from tto_answer"
     print(SQL_TEXT)
+
+    if version is not None and version != "all":
+        SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
     result = cursor.execute(SQL_TEXT)
     data = []
     for row in result:
@@ -432,6 +441,7 @@ def add_dce_answer():
 @app.route("/api/answer/dce")
 def get_dce_answer():
     version = request.args.get('version')
+    participant = request.args.get('participant')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
@@ -441,6 +451,15 @@ def get_dce_answer():
 
     if version is not None and version != "all":
         SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
+    if participant is not None:
+        if participant != "all":
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where  participant='{0}'".format(participant)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "and  participant='{0}'".format(participant)
 
     result = cursor.execute(SQL_TEXT)
     data = []
@@ -484,12 +503,17 @@ def add_open_answer():
 
 @app.route("/api/answer/open")
 def get_open_answer():
+    version = request.args.get('version')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
     SQL_TEXT = "select * from opened_answer"
     print(SQL_TEXT)
+
+    if version is not None and version != "all":
+        SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
     result = cursor.execute(SQL_TEXT)
     data = []
     for row in result:
@@ -522,10 +546,42 @@ def upload_file():
         file = request.files.get('file')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            
+            #获取文件后缀
+            file_suffix = filename.rsplit('.',1)[1].lower()
+            file_realname = filename.rsplit('.',1)[0].lower()
+
+            filename = file_realname + str(time.strftime("%Y%m%d%H%M%S", time.localtime())) +'.' + file_suffix
             file.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+            print(os.path.join(app.config['UPLOAD_PATH'],filename))
+
+            filepath = os.path.join(app.config['UPLOAD_PATH'],filename)
+            # 连接数据库
+            conn = sqlite3.connect('question.db', check_same_thread=False)
+            cursor = conn.cursor()
+
+            # TTO & TTO-Feedback Question
+            for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
+                cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+                    data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+            conn.commit()
+
+            # DCE Question
+            for data in readexcel.read(filepath, 'DCE', True):
+                cursor.execute("insert into dce_question(questionid,presentation,name,block,answer,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
+                    data[6],data[0], data[1], data[2], data[3], data[4], data[5]))
+            conn.commit()
+
+            # Open ended Question
+            for data in readexcel.read(filepath, 'Open ended questions', True):
+                cursor.execute("insert into opened_question(questionid,presentation,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}')".format(
+                    data[5],data[0], data[1], data[2], data[3], data[4]))
+            conn.commit()
+
     return jsonify({
         "status": 200,
-        "filename": filename
+        "filename": filename,
+        "msg": "ok"
     })
 
 
