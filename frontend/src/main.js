@@ -20,6 +20,12 @@ Vue.prototype.$axios = axios;
 
 Vue.config.productionTip = false;
 
+console.log("starting app ...")
+
+axios.get("/api/answer/version").then(res => {
+  console.log(res.data)
+})
+
 new Vue({
   router,
   store,
