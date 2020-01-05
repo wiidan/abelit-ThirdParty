@@ -1,14 +1,19 @@
 <template>
   <v-container class="grey lighten-5" fluid>
-    <v-card justify="center" align="center">
-      <v-card-title v-show="false">
-        EQ TTO
-        <v-spacer></v-spacer>
+    <v-card justify="center" align="start">
+      <v-card-title v-show="true">
+        <v-row>
+          <v-col>
+            <v-alert dense type="info">{{ eqLangLabels[$vuetify.lang.current].question }}</v-alert>
+            <!-- {{newBlock.split("*")}} -->
+          </v-col>
+        </v-row>
+        <!-- <v-spacer></v-spacer>
         <span color="grey">总共用时： {{usedTime}}</span>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span color="grey">本题用时： {{itemUsedTime}}</span>
+        <span color="grey">本题用时： {{itemUsedTime}}</span>-->
       </v-card-title>
-      <v-divider></v-divider>
+      <!-- <v-divider></v-divider> -->
       <v-card-text>
         <v-row>
           <v-col cols="3" class="px-8">
@@ -28,7 +33,7 @@
             </v-row>
           </v-col>
           <v-col cols="9" class="px-8" v-if="slide==1">
-            <v-row v-if="showDetail" justify="start">
+            <!-- <v-row v-if="showDetail" justify="start">
               <span class="display-0">当前SLIDE： {{ slide }}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <span
@@ -52,7 +57,7 @@
               <span
                 class="display-0"
               >当前题目： {{ block.name }}</span>
-            </v-row>
+            </v-row>-->
             <v-row justify="start" align="center">
               <div>
                 <div :style="cStyle1">{{currentYear}}</div>
@@ -120,11 +125,11 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row justify="center" align="center" v-if="slide==1">
+        <v-row justify="center" align="center" v-if="slide==1 &&  block.source_text ">
           <v-col cols="6">
             <v-row>
               <div class="message-box pa-5 mt-5" style="margin-left: 200px; text-align: left">
-                <div v-for="msg in block.source_text.split('*')" :key="msg.key">
+                <div v-for="msg in  block.source_text.split('*')" :key="msg.key">
                   <li v-if="msg != ''">
                     <span>{{msg}}</span>
                   </li>
@@ -143,7 +148,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row justify="center" align="center" v-if="slide==2">
+        <v-row justify="center" align="center" v-if="slide==2 &&  block.source_text">
           <v-col cols="6">
             <v-row>
               <div class="message-box-2 pa-5 mt-5" style="margin-left: 200px;text-align:left">
@@ -199,6 +204,27 @@
         <v-spacer></v-spacer>
       </v-card-actions>-->
     </v-card>
+    <v-row>
+      <v-dialog v-model="popupDialog" persistent max-width="600">
+        <v-card class="pt-5 yellow lighten-4">
+          <v-card-text class="display-1" style="text-indent:2em;">
+            <!-- <span v-if="popA">{{ eqLangLabels[$vuetify.lang.current].popup_window }}</span>
+            <span v-if="popB">{{ eqLangLabels[$vuetify.lang.current].msg_response_53 }}</span>
+            <span v-if="popC">{{ eqLangLabels[$vuetify.lang.current].msg_response_51 }}</span>-->
+            "hi"
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="light-green darken-3"
+              @click="popupDialog = false"
+              large
+            >{{ eqLangLabels[$vuetify.lang.current].btn_ok_exmple }}</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </v-container>
 </template>
 
@@ -229,9 +255,13 @@ export default {
     itemStartTime: 0,
     itemEndTime: 0,
     itemUsedTime: "00:00:00",
-    bAlertText:
-      "你的回应表明，你愿意放弃生命A的所有时间。这表示你宁愿现在马上死亡也不愿意在所描述的生命B生活10年。那我回问你一些稍微不同的问题，了解你对生命B的看法。",
-    ttoAnswer: ""
+    bAlertText: "",
+    ttoAnswer: "",
+    popupDialog: false,
+    popA: false,
+    popB: false,
+    popC: false
+    // newBlock: ""
   }),
 
   methods: {
@@ -291,7 +321,9 @@ export default {
           if (this.step === 0) {
             this.currentYear = this.currentYear - 10;
           } else if (this.step === 1) {
-            alert(this.bAlertText);
+            // alert(this.bAlertText);
+            this.popA = true;
+            this.popupDialog = true;
             this.slide = 2;
             this.stepDirection++;
           } else if (this.step === 2) {
@@ -417,7 +449,10 @@ export default {
           }
         }
       } else {
-        alert("A&B");
+        // alert("A&B");
+        this.popA = true;
+        this.popupDialog = true;
+
         var ttoValue = 0;
         if (this.stepDirection % 2 == 0) {
           ttoValue = this.currentYear * 0.1;
@@ -663,6 +698,15 @@ export default {
     );
     // console.log(this.$refs.table1.getBoundingClientRect());
     // console.log("EqTto ....");
+    console.log(this.block);
+
+    console.log("-----------------------");
+    // var mystr = "apple";
+    console.log(this.block);
+
+    // if (this.block.source_text) {
+    //   this.newBlock = this.block.source_text;
+    // }
   },
   computed: {
     allContent: function() {
@@ -674,7 +718,7 @@ export default {
         return arr;
       };
     },
-    ...mapState(["userInfo", "examType", "qVersion"])
+    ...mapState(["userInfo", "examType", "qVersion", "eqLangLabels"])
   }
 };
 </script>

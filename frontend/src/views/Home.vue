@@ -31,15 +31,45 @@
 import questiontype from "@/assets/data/questiontype.json";
 export default {
   data: () => ({
-    questionType: questiontype
+    questionType: questiontype,
+    eqLabels: []
   }),
   methods: {
     saveExamType(value) {
       console.log(value);
+      this.getLabel(value.id);
       this.$store.dispatch("setExamType", value).then(() => {
         // 跳转到指定页面
         this.$router.push({ path: "/eq" });
       });
+    },
+    getLabel(qid) {
+      let url = "/api/eqlabel";
+      this.$axios
+        .get(url, {
+          params: {
+            questionid: qid
+          }
+        })
+        .then(res => {
+          let arrData = res.data;
+          // let lang = this.$vuetify.lang.current;
+          let enObj = new Object();
+          let zhObj = new Object();
+          let obj = new Object();
+          for (let i = 0; i < arrData.length; i++) {
+            zhObj[arrData[i].reference_id] = arrData[i].zh_source_text;
+            enObj[arrData[i].reference_id] = arrData[i].en_source_text;
+          }
+          obj.en_us = enObj;
+          obj.zh_cn = zhObj;
+          this.eqLabels = obj;
+
+          this.$store.dispatch("setEqLangLabel", this.eqLabels);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 };

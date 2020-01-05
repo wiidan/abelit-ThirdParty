@@ -2,7 +2,7 @@
   <v-container v-show="dceQuestion.length > 1">
     <v-row>
       <v-col>
-        <v-alert dense type="info">Which is better, state A or state B?</v-alert>
+        <v-alert dense type="info">{{ eqLangLabels[$vuetify.lang.current].question }}</v-alert>
       </v-col>
     </v-row>
     <v-row v-for="item in dceQuestion" :key="item.id">
@@ -15,8 +15,20 @@
           @click="chooseAnswer(item.answerA)"
         >
           <h3>{{ item.answerA }}</h3>
-          <p v-if="randNum == 1">{{ item.sourceTextA }}</p>
-          <p v-else>{{ item.sourceTextB }}</p>
+          <div class="message-box-2 mt-5" v-if="randNum == 1">
+            <div v-for="msg in item.sourceTextA.split('*')" :key="msg.key">
+              <li v-if="msg != ''">
+                <span>{{msg}}</span>
+              </li>
+            </div>
+          </div>
+          <div class="message-box-2 mt-5" v-else>
+            <div v-for="msg in item.sourceTextB.split('*')" :key="msg.key">
+              <li v-if="msg != ''">
+                <span>{{msg}}</span>
+              </li>
+            </div>
+          </div>
         </v-card>
       </v-col>
       <v-col cols="6" v-if="item.name == name">
@@ -28,8 +40,20 @@
           @click="chooseAnswer(item.answerB)"
         >
           <h3>{{ item.answerB }}</h3>
-          <p v-if="randNum==1">{{ item.sourceTextB }}</p>
-          <p v-else>{{ item.sourceTextB }}</p>
+          <div class="message-box-2 mt-5" v-if="randNum == 1">
+            <div v-for="msg in item.sourceTextB.split('*')" :key="msg.key">
+              <li v-if="msg != ''">
+                <span>{{msg}}</span>
+              </li>
+            </div>
+          </div>
+          <div class="message-box-2 mt-5" v-else>
+            <div v-for="msg in item.sourceTextA.split('*')" :key="msg.key">
+              <li v-if="msg != ''">
+                <span>{{msg}}</span>
+              </li>
+            </div>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -39,6 +63,25 @@
           <v-icon>mdi-play</v-icon>
         </v-btn>
       </v-col>
+    </v-row>
+    <v-row>
+      <v-dialog v-model="popupDialog" persistent max-width="600">
+        <v-card class="pt-5 yellow lighten-4">
+          <v-card-text
+            class="display-1"
+            style="text-indent:2em;"
+          >{{ eqLangLabels[$vuetify.lang.current].popup_example }}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="light-green darken-3"
+              @click="popupDialog = false"
+              large
+            >{{ eqLangLabels[$vuetify.lang.current].btn_ok_exmple }}</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-row>
   </v-container>
 </template>
@@ -54,7 +97,8 @@ export default {
     selectedAnswer: "",
     dceAnswers: [],
     dceReversal: "NORMAL",
-    randNum: 1
+    randNum: 1,
+    popupDialog: true
   }),
   created() {
     this.getdceQuestion();
@@ -63,7 +107,7 @@ export default {
   },
   mounted() {},
   computed: {
-    ...mapState(["userInfo", "examType", "qVersion"])
+    ...mapState(["userInfo", "examType", "qVersion", "eqLangLabels"])
   },
   methods: {
     nextBtn() {

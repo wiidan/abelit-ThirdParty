@@ -1,18 +1,18 @@
 <template>
   <v-container>
     <v-card>
-      <v-card-title class="display-1">To be filled in by interviewer</v-card-title>
+      <v-card-title class="display-1">{{ eqLangLabels[$vuetify.lang.current].T4 }}</v-card-title>
       <v-card-text>
         <v-row justify="center" class="mt-12">
           <v-col cols="2" xs="4">
-            <v-subheader class="eq-userinfo">Interviewer</v-subheader>
+            <v-subheader class="eq-userinfo">{{ eqLangLabels[$vuetify.lang.current].T5 }}</v-subheader>
           </v-col>
           <v-col cols="4" xs="4">
             <v-select
               :items="interviewerList"
               item-text="name"
               item-value="id"
-              label="- select -"
+              :label="'- '+eqLangLabels[$vuetify.lang.current].interviewer+' -'"
               outlined
               v-model="interviewer"
             ></v-select>
@@ -20,18 +20,27 @@
         </v-row>
         <v-row justify="center" class="mt-12">
           <v-col cols="2">
-            <v-subheader class="eq-userinfo">Participant ID</v-subheader>
+            <v-subheader class="eq-userinfo">{{ eqLangLabels[$vuetify.lang.current].T6 }}</v-subheader>
           </v-col>
           <v-col cols="4">
-            <v-text-field label="- participant id -" outlined v-model="participant"></v-text-field>
+            <v-text-field
+              :label="'- '+eqLangLabels[$vuetify.lang.current].participant+' -'"
+              outlined
+              v-model="participant"
+            ></v-text-field>
           </v-col>
         </v-row>
         <v-row justify="center" class="mt-12" v-if="blocks[0] != 'A'">
           <v-col cols="2">
-            <v-subheader class="eq-userinfo">Block of questions</v-subheader>
+            <v-subheader class="eq-userinfo">{{ eqLangLabels[$vuetify.lang.current].T7 }}</v-subheader>
           </v-col>
           <v-col cols="4">
-            <v-select :items="blocks" label="- select -" outlined v-model="blockQuestion"></v-select>
+            <v-select
+              :items="blocks"
+              :label="'- '+eqLangLabels[$vuetify.lang.current].block+' -'"
+              outlined
+              v-model="blockQuestion"
+            ></v-select>
           </v-col>
         </v-row>
       </v-card-text>
@@ -45,9 +54,7 @@
           dark
           class="mt-12"
           @click="saveUserInfo()"
-        >
-          <v-icon>mdi-play</v-icon>
-        </v-btn>
+        >{{eqLangLabels[$vuetify.lang.current].continue}}</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>
@@ -105,7 +112,7 @@ export default {
     this.getInterviewer();
   },
   computed: {
-    ...mapState(["blocks"])
+    ...mapState(["blocks", "eqLangLabels"])
   }
 };
 </script>

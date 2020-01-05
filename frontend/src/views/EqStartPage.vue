@@ -6,7 +6,7 @@
           <v-row>
             <v-col class="mb-12" style="color: white">
               <!-- <span class="display-1">{{ examType.content }}</span> -->
-              <span class="display-1">{{ eqLabels[$vuetify.lang.current].T1 }}</span>
+              <span class="display-1">{{ eqLangLabels[$vuetify.lang.current].T1 }}</span>
               <v-spacer class="pb-2"></v-spacer>
               <span class="display-1" dark>{{ new Date().toLocaleString() }}</span>
             </v-col>
@@ -26,7 +26,7 @@
             </v-col>
           </v-row>
           <v-btn color="#0094ff" x-large height="72" dark class="mt-12" @click="startExam()">
-            <span class="display-1">{{ eqLabels[$vuetify.lang.current].start_survey }}</span>
+            <span class="display-1">{{ eqLangLabels[$vuetify.lang.current].start_survey }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -41,8 +41,8 @@ export default {
   name: "EqStartPage",
   data: () => ({
     questionVersions: [],
-    qVersion: "",
-    eqLabels: []
+    qVersion: ""
+    // eqLabels: []
   }),
   components: {
     // EqUserInfo
@@ -83,43 +83,45 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
-    getLabel() {
-      let url = "/api/eqlabel";
-      this.$axios
-        .get(url, {
-          params: {
-            questionid: this.examType.id
-          }
-        })
-        .then(res => {
-          let arrData = res.data;
-          // let lang = this.$vuetify.lang.current;
-          let enObj = new Object();
-          let zhObj = new Object();
-          let obj = new Object();
-          for (let i = 0; i < arrData.length; i++) {
-            zhObj[arrData[i].reference_id] = arrData[i].zh_source_text;
-            enObj[arrData[i].reference_id] = arrData[i].en_source_text;
-          }
-          obj.en_us = enObj;
-          obj.zh_cn = zhObj;
-          this.eqLabels = obj;
-          console.log(obj);
-          console.log(obj.en_us.T1);
-          console.log(obj.zh_cn.T1);
-        })
-        .catch(err => {
-          console.log(err);
-        });
     }
+    // getLabel() {
+    //   let url = "/api/eqlabel";
+    //   this.$axios
+    //     .get(url, {
+    //       params: {
+    //         questionid: this.examType.id
+    //       }
+    //     })
+    //     .then(res => {
+    //       let arrData = res.data;
+    //       // let lang = this.$vuetify.lang.current;
+    //       let enObj = new Object();
+    //       let zhObj = new Object();
+    //       let obj = new Object();
+    //       for (let i = 0; i < arrData.length; i++) {
+    //         zhObj[arrData[i].reference_id] = arrData[i].zh_source_text;
+    //         enObj[arrData[i].reference_id] = arrData[i].en_source_text;
+    //       }
+    //       obj.en_us = enObj;
+    //       obj.zh_cn = zhObj;
+    //       this.eqLabels = obj;
+
+    //       this.$store.dispatch("setEqLangLabel", this.eqLabels);
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // }
   },
   computed: {
-    ...mapState(["examType", "examStart"])
+    ...mapState(["examType", "examStart", "eqLangLabels"])
   },
   mounted() {
     this.getQuestionVerion();
-    this.getLabel();
+    console.log(this.eqLangLabels);
+  },
+  created() {
+    // this.getLabel();
   }
 };
 </script>

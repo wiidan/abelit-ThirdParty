@@ -11,6 +11,7 @@ const state = {
   allAnswer: JSON.parse(localStorage.getItem("allAnswer")) || [],
   qVersion: localStorage.getItem("qVersion") || "",
   language: localStorage.getItem("language") || "zh_cn",
+  eqLangLabels: JSON.parse(localStorage.getItem("eqLangLabels")) || []
 };
 
 const actions = {
@@ -49,6 +50,11 @@ const actions = {
   }, value) {
     commit("setLanguage", value);
   },
+  setEqLangLabel({
+    commit
+  }, obj) {
+    commit("setEqLangLabel", obj);
+  },
 };
 
 const mutations = {
@@ -79,6 +85,10 @@ const mutations = {
   setLanguage: (state, value) => {
     state.language = value;
     localStorage.setItem("language", value);
+  },
+  setEqLangLabel: (state, obj) => {
+    state.eqLangLabels = obj;
+    localStorage.setItem("eqLangLabels", JSON.stringify(obj));
   },
 };
 

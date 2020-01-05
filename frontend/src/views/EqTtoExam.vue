@@ -9,6 +9,25 @@
         :key="item.id"
       ></eq-tto>
     </template>
+    <v-row>
+      <v-dialog v-model="popupDialog" persistent max-width="600">
+        <v-card class="pt-5 yellow lighten-4">
+          <v-card-text
+            class="display-1"
+            style="text-indent:2em;"
+          >{{ eqLangLabels[$vuetify.lang.current].popup_window_exmple }}</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="light-green darken-3"
+              @click="popupDialog = false"
+              large
+            >{{ eqLangLabels[$vuetify.lang.current].btn_ok_exmple }}</v-btn>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </div>
 </template>
 
@@ -24,22 +43,24 @@ export default {
     eqTtoQuestions: [{}],
     currentItem: 0,
     startTime: 0,
-    ttoAnswers: []
+    ttoAnswers: [],
+    popupDialog: true
   }),
   created() {
     this.getQuestion();
     this.startTime = new Date();
   },
   mounted() {
-    console.log("EQ tto Exam")
+    console.log("EQ tto Exam");
+    console.log(this.eqLangLabels);
   },
   computed: {
-    ...mapState(["userInfo","qVersion"])
+    ...mapState(["userInfo", "qVersion", "eqLangLabels"])
   },
   methods: {
     pUpdateItem(data) {
       this.ttoAnswers.push(data);
-      console.log(this.ttoAnswers)
+      console.log(this.ttoAnswers);
       this.currentItem++;
       // console.log(this.currentItem);
       // console.log(this.eqTtoQuestions.length)
@@ -52,7 +73,7 @@ export default {
       // console.log(this.userInfo.blockQuestion);
       this.$axios
         .get("/api/question/tto", {
-          params: { block: this.userInfo.blockQuestion , version: this.qVersion}
+          params: { block: this.userInfo.blockQuestion, version: this.qVersion }
         })
         .then(res => {
           this.eqTtoQuestions = res.data;

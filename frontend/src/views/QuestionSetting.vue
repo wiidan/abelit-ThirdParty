@@ -14,8 +14,8 @@
           <v-row class="px-10">
             <v-subheader>上传题库</v-subheader>
             <v-file-input v-model="file" label="选择文件" :show-size="1000" outlined dense></v-file-input>
-            <v-btn color="#036f90" dark @click="uploadFile" class="ml-5">上传</v-btn>
-            <v-btn color="#036f90" dark @click="downloadExampleFile" class="ml-1">下载题库设计样本</v-btn>
+            <v-btn color="#036f90" dark @click="uploadFile" class="ml-3">上传</v-btn>
+            <v-btn color="#036f90" dark @click="downloadExampleFile" class="ml-3">下载题库设计样本</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -26,56 +26,46 @@
 
     <div v-if="type==3">
       <v-row>
-        <v-col cols="3">
+        <v-col cols="4" sm="3">
           <v-row>
-            <v-col>
-              <v-subheader>题目类型</v-subheader>
-            </v-col>
-            <v-col>
-              <v-select
-                :items="questionTypes"
-                v-model="qtype"
-                item-value="id"
-                item-text="name"
-                label="选题题型"
-                outlined
-                dense
-                @change="getQuestionVersion"
-              ></v-select>
-            </v-col>
+            <v-subheader>题目类型</v-subheader>
+            <v-select
+              :items="questionTypes"
+              v-model="qtype"
+              item-value="id"
+              item-text="name"
+              label="选题题型"
+              outlined
+              dense
+              @change="getQuestionVersion"
+            ></v-select>
           </v-row>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="6" sm="4">
           <v-row>
-            <v-col>
-              <v-subheader>题库版本</v-subheader>
-            </v-col>
-            <v-col>
-              <v-select
-                :items="questionVersions"
-                v-model="qversion"
-                item-value="version"
-                item-text="version"
-                label="选择版本号"
-                outlined
-                dense
-              ></v-select>
-            </v-col>
+            <v-subheader>题库版本</v-subheader>
+            <v-select
+              :items="questionVersions"
+              v-model="qversion"
+              item-value="version"
+              item-text="version"
+              label="选择版本号"
+              outlined
+              dense
+            ></v-select>
+            <v-btn color="#036f90" dark @click="getQuestion" class="ml-3">查询</v-btn>
+            <v-btn color="error" dark @click="deleteDialog = true" class="ml-3">删除题库</v-btn>
+            <v-dialog v-model="deleteDialog" max-width="500">
+              <v-card justify="center" align="center">
+                <v-card-text class="pt-8 title">你确定删除吗</v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="green darken-1" text @click="deleteDialog = false">取消</v-btn>
+                  <v-btn color="green darken-1" text @click="deleteQuestion">确定</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-row>
-        </v-col>
-        <v-col cols="3" class="pa-8">
-          <v-btn color="primary" dark @click="getQuestion">查询</v-btn>
-          <v-btn color="error" dark @click="deleteDialog = true" class="ml-5">删除题库</v-btn>
-          <v-dialog v-model="deleteDialog" max-width="500">
-            <v-card justify="center" align="center">
-              <v-card-text class="pt-8 title">你确定删除吗</v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="green darken-1" text @click="deleteDialog = false">取消</v-btn>
-                <v-btn color="green darken-1" text @click="deleteQuestion">确定</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-col>
       </v-row>
       <v-row>
@@ -104,7 +94,7 @@
               outlined
               dense
             ></v-select>
-            <v-btn class="ml-5" color="primary" @click="getParticipant">查询</v-btn>
+            <v-btn class="ml-3" color="#036f90" dark @click="getParticipant">查询</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -120,7 +110,7 @@
               <v-icon
                 small
                 class="mr-2"
-                color="primary"
+                color="#036f90"
                 v-if="item.TTO > 0"
                 @click="viewDetailAnswer(item.participant,item.TTO)"
               >remove_red_eye</v-icon>
@@ -135,7 +125,7 @@
               <v-icon
                 small
                 class="mr-2"
-                color="primary"
+                color="#036f90"
                 v-if="item.DCE > 0"
                 @click="viewDetailAnswer(item.participant,item.DCE)"
               >remove_red_eye</v-icon>
@@ -146,11 +136,26 @@
                 @click="downloadAnswer(item.participant,item.DCE)"
               >file_download</v-icon>
             </template>
+            <template v-slot:item.TTOFeedback="{ item }">
+              <v-icon
+                small
+                class="mr-2"
+                color="#036f90"
+                v-if="item.TTOFeedback > 0"
+                @click="viewDetailAnswer(item.participant,item.TTOFeedback)"
+              >remove_red_eye</v-icon>
+              <v-icon
+                small
+                v-if="item.TTOFeedback > 0"
+                color="primary"
+                @click="downloadAnswer(item.participant,item.TTOFeedback)"
+              >file_download</v-icon>
+            </template>
             <template v-slot:item.Opened="{ item }">
               <v-icon
                 small
                 class="mr-2"
-                color="primary"
+                color="#036f90"
                 v-if="item.Opened > 0"
                 @click="viewDetailAnswer(item.participant,item.Opened)"
               >remove_red_eye</v-icon>
