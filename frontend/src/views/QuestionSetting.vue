@@ -14,12 +14,11 @@
           <v-row class="px-10">
             <v-subheader>上传题库</v-subheader>
             <v-file-input v-model="file" label="选择文件" :show-size="1000" outlined dense></v-file-input>
-            <v-btn color="primary" @click="uploadFile" class="ml-5">上传</v-btn>
-            <v-btn color="primary" @click="downloadExampleFile" class="ml-5">下载问题设计样本</v-btn>
+            <v-btn color="#036f90" dark @click="uploadFile" class="ml-5">上传</v-btn>
+            <v-btn color="#036f90" dark @click="downloadExampleFile" class="ml-1">下载题库设计样本</v-btn>
           </v-row>
         </v-col>
       </v-row>
-      <v-snackbar v-model="snackbar" color="primary" :timeout="2000">{{msg}}</v-snackbar>
     </div>
     <div v-if="type==2" style="margin-top: 15%">
       <span>此模块尚未开放</span>
@@ -66,7 +65,17 @@
         </v-col>
         <v-col cols="3" class="pa-8">
           <v-btn color="primary" dark @click="getQuestion">查询</v-btn>
-          <v-btn color="error" dark @click="deleteQuestion" class="ml-5">删除题库</v-btn>
+          <v-btn color="error" dark @click="deleteDialog = true" class="ml-5">删除题库</v-btn>
+          <v-dialog v-model="deleteDialog" max-width="500">
+            <v-card justify="center" align="center">
+              <v-card-text class="pt-8 title">你确定删除吗</v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="green darken-1" text @click="deleteDialog = false">取消</v-btn>
+                <v-btn color="green darken-1" text @click="deleteQuestion">确定</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-col>
       </v-row>
       <v-row>
@@ -227,14 +236,32 @@
             flat
           >
             <template v-slot:append-outer>
-              <v-btn outlined height="41" dense color="amber" @click="initdb">
+              <v-btn outlined height="41" dense color="amber" @click.stop="initdbDialog = true">
                 <span>初始化</span>
               </v-btn>
+              <v-dialog v-model="initdbDialog" max-width="500">
+                <v-card>
+                  <v-card-title>你确定初始化数据吗？</v-card-title>
+
+                  <v-card-text>
+                    <v-alert type="warning">初始化数据将会删除所有题库和答案数据！</v-alert>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn color="green darken-1" text @click="initdbDialog = false">取消</v-btn>
+
+                    <v-btn color="green darken-1" text @click="initdb">确定</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </template>
           </v-text-field>
         </v-col>
       </v-row>
     </div>
+    <v-snackbar v-model="snackbar" :color="isSuccess?primary:'#EF5350'" :timeout="2000">{{msg}}</v-snackbar>
   </v-container>
 </template>
 
@@ -250,6 +277,7 @@ export default {
     file: [],
     msg: "",
     snackbar: false,
+    isSuccess: false,
     questionTypes: questiontype,
     questionVersions: [],
     qtype: "",
@@ -263,6 +291,8 @@ export default {
     tableHeaders: [],
     tableData: [],
     dialog: false,
+    initdbDialog: false,
+    deleteDialog: false,
     tableAHeaders: [],
     tableAData: [],
     tablePHeaders: [],
@@ -539,26 +569,36 @@ export default {
     },
     initdb() {
       let url = "/admin/initdb";
-      console.log(this.adminpwd);
+
       this.$axios
         .post(url, {
           adminpwd: this.adminpwd
         })
         .then(res => {
-          alert(res.data.msg);
+          console.log(res.data);
+          this.isSuccess = true;
+          this.msg = "数据初始化成功！";
+          this.snackbar = true;
         })
         .catch(err => {
+          this.isSuccess = false;
+          this.msg = "管理员密码不正确！";
+          this.snackbar = true;
           console.log(err);
         });
     },
     deleteQuestion() {
       let url = "/api/question/delete";
       if (this.qversion == "") {
-        alert("请选择题库版本号！");
+        this.isSuccess = false;
+        this.msg = "未选择题库及对应的版本号！";
+        this.snackbar = true;
         return false;
       }
       if (this.qtype == "") {
-        alert("请选择题库类型！");
+        this.isSuccess = false;
+        this.msg = "未选择题库及对应的版本号！";
+        this.snackbar = true;
         return false;
       }
 
@@ -569,9 +609,15 @@ export default {
         })
         .then(res => {
           console.log(res.data);
+          this.isSuccess = true;
+          this.msg = "删除成功！";
+          this.snackbar = true;
         })
         .catch(err => {
           console.log(err);
+          this.isSuccess = false;
+          this.msg = "删除失败";
+          this.snackbar = true;
         });
     },
     getAnswerVersion() {

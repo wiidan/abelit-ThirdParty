@@ -33,7 +33,7 @@ def init_db():
     password = request.get_json()['adminpwd']
 
     if not password or password != app.config['adminpwd']:
-        return jsonify({"status": 400, "msg": "密码错误"})
+        return jsonify({"status": 400, "msg": "密码错误"}), 520
 
     os.remove('question.db')
 

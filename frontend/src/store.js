@@ -9,7 +9,8 @@ const state = {
   userInfo: JSON.parse(localStorage.getItem("userInfo")) || [],
   blocks: [],
   allAnswer: JSON.parse(localStorage.getItem("allAnswer")) || [],
-  qVersion: localStorage.getItem("qVersion") || ""
+  qVersion: localStorage.getItem("qVersion") || "",
+  language: localStorage.getItem("language") || "zh_cn",
 };
 
 const actions = {
@@ -42,7 +43,12 @@ const actions = {
     commit
   }, obj) {
     commit("setQuestionVersion", obj);
-  }
+  },
+  setLanguage({
+    commit
+  }, value) {
+    commit("setLanguage", value);
+  },
 };
 
 const mutations = {
@@ -69,7 +75,11 @@ const mutations = {
   setQuestionVersion: (state, value) => {
     state.qVersion = value;
     localStorage.setItem("qVersion", value);
-  }
+  },
+  setLanguage: (state, value) => {
+    state.language = value;
+    localStorage.setItem("language", value);
+  },
 };
 
 export default new Vuex.Store({

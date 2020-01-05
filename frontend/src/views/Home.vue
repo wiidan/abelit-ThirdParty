@@ -1,15 +1,9 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-img
-      :src="require('@/assets/images/eq5d_bg1.jpg')"
-      max-height="40vh"
-      :aspect-ratio="16 / 9"
-    >
+    <v-img :src="require('@/assets/images/eq5d_bg1.jpg')" max-height="40vh" :aspect-ratio="16 / 9">
       <v-row align="center" justify="center" style="height: 100%">
         <v-col cols="8">
-          <span class="display-3 font-weight-bold" style="color: #014759"
-            >Questions?</span
-          >
+          <span class="display-3 font-weight-bold" style="color: #014759">Questions?</span>
         </v-col>
       </v-row>
     </v-img>
@@ -26,8 +20,7 @@
             height="120"
             dark
             @click="saveExamType(item)"
-            >{{ item.name }}</v-card
-          >
+          >{{ item.name }}</v-card>
         </v-row>
       </v-col>
     </v-row>
@@ -37,7 +30,6 @@
 <script>
 import questiontype from "@/assets/data/questiontype.json";
 export default {
-
   data: () => ({
     questionType: questiontype
   }),
@@ -48,8 +40,7 @@ export default {
         // 跳转到指定页面
         this.$router.push({ path: "/eq" });
       });
-    },
-
+    }
   }
 };
 </script>
