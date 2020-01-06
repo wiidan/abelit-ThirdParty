@@ -60,7 +60,7 @@
             </v-row>-->
             <v-row justify="start" align="center">
               <div>
-                <div :style="cStyle1">{{Math.floor(currentYear) + eqLangLabels[$vuetify.lang.current].years + (((currentYear%1)*12 != 0)?(',' + (currentYear%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }} </div>
+                <div :style="cStyle1" style="text-align: center">{{Math.floor(currentYear) + eqLangLabels[$vuetify.lang.current].years + (((currentYear%1)*12 != 0)?(',' + (currentYear%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }} </div>
                 <canvas id="canvas1" ref="canvas1"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table1">
@@ -93,7 +93,7 @@
           <v-col cols="9" class="px-8" v-if="slide==2">
             <v-row justify="start">
               <div>
-                <div :style="cStyle3">{{Math.floor(currentYearB) + eqLangLabels[$vuetify.lang.current].years + (((currentYearB%1)*12 != 0)?(',' + (currentYearB%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }}</div>
+                <div :style="cStyle3" style="text-align: center">{{Math.floor(currentYearB) + eqLangLabels[$vuetify.lang.current].years + (((currentYearB%1)*12 != 0)?(',' + (currentYearB%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }}</div>
                 <canvas id="canvas3" ref="canvas3"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table3">
@@ -550,6 +550,8 @@ export default {
             this.topYear,
             this.currentYear
           );
+
+          console.log(this.cStyle1)
           this.drawLine(
             "canvas2",
             this.$refs.table2.offsetWidth,
@@ -693,7 +695,10 @@ export default {
     getStyle(w, ty, cy) {
       var width = w;
       var paddingRight = w - (w / ty) * cy;
-
+      if (width == paddingRight) {
+        paddingRight = paddingRight-30
+      }
+      console.log
       return (
         "width: " + width + "px; " + "padding-right: " + paddingRight + "px;"
       );
