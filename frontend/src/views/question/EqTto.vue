@@ -60,7 +60,7 @@
             </v-row>-->
             <v-row justify="start" align="center">
               <div>
-                <div :style="cStyle1">{{currentYear}}</div>
+                <div :style="cStyle1">{{Math.floor(currentYear) + eqLangLabels[$vuetify.lang.current].years + (((currentYear%1)*12 != 0)?(',' + (currentYear%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }} </div>
                 <canvas id="canvas1" ref="canvas1"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table1">
@@ -93,7 +93,7 @@
           <v-col cols="9" class="px-8" v-if="slide==2">
             <v-row justify="start">
               <div>
-                <div :style="cStyle3">{{currentYearB}}</div>
+                <div :style="cStyle3">{{Math.floor(currentYearB) + eqLangLabels[$vuetify.lang.current].years + (((currentYearB%1)*12 != 0)?(',' + (currentYearB%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }}</div>
                 <canvas id="canvas3" ref="canvas3"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table3">
@@ -208,11 +208,15 @@
       <v-dialog v-model="popupDialog" persistent max-width="600">
         <v-card class="pt-5 yellow lighten-4">
           <v-card-text class="display-1" style="text-indent:2em;">
-            <span v-if="popA">{{ eqLangLabels[$vuetify.lang.current].msg_response_41 + currentYear + eqLangLabels[$vuetify.lang.current].msg_response_42}}</span>
+            <span
+              v-if="popA"
+            >{{ eqLangLabels[$vuetify.lang.current].msg_response_41 + currentYear + eqLangLabels[$vuetify.lang.current].msg_response_42}}</span>
             <span v-if="popA_to_B">{{ eqLangLabels[$vuetify.lang.current].popup_window }}</span>
             <span v-if="popAZero">{{ eqLangLabels[$vuetify.lang.current].msg_response_43 }}</span>
             <span v-if="popBFull">{{ eqLangLabels[$vuetify.lang.current].msg_response_53 }}</span>
-            <span v-if="popB">{{ eqLangLabels[$vuetify.lang.current].msg_response_51 + currentBYear + eqLangLabels[$vuetify.lang.current].msg_response_52}}</span>
+            <span
+              v-if="popB"
+            >{{ eqLangLabels[$vuetify.lang.current].msg_response_51 + currentBYear + eqLangLabels[$vuetify.lang.current].msg_response_52}}</span>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -463,114 +467,131 @@ export default {
         }
       } else {
         if (this.stepDirection % 2 == 0) {
-          alert(this.eqLangLabels[this.$vuetify.lang.current].msg_response_41 + (10 - this.currentYear) + this.eqLangLabels[this.$vuetify.lang.current].msg_response_42);
-        } else if (this.stepDirection % 2 == 1) {
-          alert(this.eqLangLabels[this.$vuetify.lang.current].msg_response_51 + (20 - this.currentYearB) + this.eqLangLabels[this.$vuetify.lang.current].msg_response_52);
-        }
-        this.popC = true;
-        this.popupDialog = true;
-        //   console.log("this is A and B!")
-
-          var ttoValue = 0;
-          if (this.stepDirection % 2 == 0) {
-            ttoValue = this.currentYear * 0.1;
+          if (this.currentYear == 0) {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_43
+            );
           } else {
-            ttoValue = (this.currentYearB - 10) * 0.1;
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_41 +
+                (10 - this.currentYear) +
+                this.eqLangLabels[this.$vuetify.lang.current].msg_response_42
+            );
           }
-          var answerObj = {
-            questionid: this.examType.id,
-            participant: this.userInfo.participant,
-            interviewer: this.userInfo.interviewer,
-            item: this.block.name,
-            position_of_item: this.block.id,
-            tto_value: ttoValue,
-            used_time: this.itemUsedTime,
-            composite_switches: this.stepDirection,
-            resets: this.resets,
-            number_of_moves: this.step,
-            block: this.block.block,
-            version: this.qVersion
-          };
-          this.ttoAnswer = answerObj;
-
-          // console.log("本题用时：" + this.itemUsedTime);
-          this.itemStartTime = new Date();
-          this.itemEndTime = 0;
-          this.itemUsedTime = "00:00:00";
-          this.getUsedTime();
-          // this.reset();
-          //通过改变父组件的值
-          this.updateItem();
-        }
-        this.selected.push(type);
-        this.step++;
-        if (this.slide === 2) {
-          this.stepB++;
+        } else {
+          if (this.currentYearB == 0) {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_53
+            );
+          } else {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_51 +
+                (20 - this.currentYearB) +
+                this.eqLangLabels[this.$vuetify.lang.current].msg_response_52
+            );
+          }
         }
 
-        // this.clearCanvas('canvas1')
-        if (type != "A" && type != "B") {
-          // console.log("type: "+type)
-          return false;
+        var ttoValue = 0;
+        if (this.stepDirection % 2 == 0) {
+          ttoValue = this.currentYear * 0.1;
+        } else {
+          ttoValue = (this.currentYearB - 10) * 0.1;
         }
-        if (this.currentYear >= 0 && this.slide === 1) {
-          this.$nextTick(() => {
-            this.drawLine(
-              "canvas1",
-              this.$refs.table1.offsetWidth,
-              20,
-              (this.$refs.table1.offsetWidth / this.topYear) * this.currentYear,
-              10,
-              0
-            );
-            // 生成样式
-            this.cStyle1 = this.getStyle(
-              this.$refs.table1.offsetWidth,
-              this.topYear,
-              this.currentYear
-            );
-            this.drawLine(
-              "canvas2",
-              this.$refs.table2.offsetWidth,
-              20,
-              this.$refs.table2.offsetWidth,
-              10,
-              0
-            );
-          });
-        }
-        if (this.currentYearB >= 0 && this.slide === 2) {
-          this.$nextTick(() => {
-            this.drawLine(
-              "canvas3",
-              this.$refs.table3.offsetWidth,
-              20,
-              (this.$refs.table3.offsetWidth / this.topYearB) * this.currentYearB,
-              10,
-              0
-            );
-            this.drawLine(
-              "canvas4",
-              this.$refs.table4.offsetWidth / 2,
-              20,
-              this.$refs.table4.offsetWidth / 2,
-              10,
-              0
-            );
-            this.cStyle3 = this.getStyle(
-              this.$refs.table3.offsetWidth,
-              this.topYearB,
-              this.currentYearB
-            );
-            this.drawLine(
-              "canvas5",
-              this.$refs.table4.offsetWidth / 2,
-              20,
-              this.$refs.table4.offsetWidth / 2,
-              10,
-              0
-            );
-          });
+        var answerObj = {
+          questionid: this.examType.id,
+          participant: this.userInfo.participant,
+          interviewer: this.userInfo.interviewer,
+          item: this.block.name,
+          position_of_item: this.block.id,
+          tto_value: ttoValue,
+          used_time: this.itemUsedTime,
+          composite_switches: this.stepDirection,
+          resets: this.resets,
+          number_of_moves: this.step,
+          block: this.block.block,
+          version: this.qVersion
+        };
+        this.ttoAnswer = answerObj;
+
+        // console.log("本题用时：" + this.itemUsedTime);
+        this.itemStartTime = new Date();
+        this.itemEndTime = 0;
+        this.itemUsedTime = "00:00:00";
+        this.getUsedTime();
+        // this.reset();
+        //通过改变父组件的值
+        this.updateItem();
+      }
+      this.selected.push(type);
+      this.step++;
+      if (this.slide === 2) {
+        this.stepB++;
+      }
+
+      // this.clearCanvas('canvas1')
+      if (type != "A" && type != "B") {
+        // console.log("type: "+type)
+        return false;
+      }
+      if (this.currentYear >= 0 && this.slide === 1) {
+        this.$nextTick(() => {
+          this.drawLine(
+            "canvas1",
+            this.$refs.table1.offsetWidth,
+            20,
+            (this.$refs.table1.offsetWidth / this.topYear) * this.currentYear,
+            10,
+            0
+          );
+          // 生成样式
+          this.cStyle1 = this.getStyle(
+            this.$refs.table1.offsetWidth,
+            this.topYear,
+            this.currentYear
+          );
+          this.drawLine(
+            "canvas2",
+            this.$refs.table2.offsetWidth,
+            20,
+            this.$refs.table2.offsetWidth,
+            10,
+            0
+          );
+        });
+      }
+      if (this.currentYearB >= 0 && this.slide === 2) {
+        this.$nextTick(() => {
+          this.drawLine(
+            "canvas3",
+            this.$refs.table3.offsetWidth,
+            20,
+            (this.$refs.table3.offsetWidth / this.topYearB) * this.currentYearB,
+            10,
+            0
+          );
+          this.drawLine(
+            "canvas4",
+            this.$refs.table4.offsetWidth / 2,
+            20,
+            this.$refs.table4.offsetWidth / 2,
+            10,
+            0
+          );
+          this.cStyle3 = this.getStyle(
+            this.$refs.table3.offsetWidth,
+            this.topYearB,
+            this.currentYearB
+          );
+          this.drawLine(
+            "canvas5",
+            this.$refs.table4.offsetWidth / 2,
+            20,
+            this.$refs.table4.offsetWidth / 2,
+            10,
+            0
+          );
+        });
       }
     },
 
