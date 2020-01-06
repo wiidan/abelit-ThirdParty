@@ -22,6 +22,10 @@ app.config['adminpwd'] = "Passw0rd123!"
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 
+@app.route("/")
+def index():
+    return render_template('index.html')
+
 @app.route('/admin/initdb', methods=['POST', 'GET'])
 def init_db():
     if request.method == 'GET':
