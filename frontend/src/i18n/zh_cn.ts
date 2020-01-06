@@ -76,5 +76,24 @@ export default {
     },
     setting: {
         settings: '设置'
+    },
+    tab: {
+        uploadQuestion: '上传题库',
+        manualInput: '手动输入',
+        question: '题库',
+        answer: '答案',
+        versionSetting: '版本设置',
+        dataInit: '数据初始化',
+        selectFile: '选择文件',
+        upload: '上传',
+        downloadExampleQuestion: '下载',
+        questionType: '问题类型',
+        selectQuestionType: '选择题型',
+        selectVersion: '选择版本',
+        query: '查询',
+        deleteQuestion: '删除题库',
+        version: '版本',
+        init: '初始化',
+        inputAdminPass: '输入管理员密码'
     }
 }

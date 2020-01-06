@@ -52,7 +52,7 @@ export default {
   },
   mounted() {
     console.log("EQ tto Exam");
-    console.log(this.eqLangLabels);
+    // console.log(this.eqLangLabels);
   },
   computed: {
     ...mapState(["userInfo", "qVersion", "eqLangLabels"])
@@ -60,7 +60,7 @@ export default {
   methods: {
     pUpdateItem(data) {
       this.ttoAnswers.push(data);
-      console.log(this.ttoAnswers);
+      // console.log(this.ttoAnswers);
       this.currentItem++;
       // console.log(this.currentItem);
       // console.log(this.eqTtoQuestions.length)

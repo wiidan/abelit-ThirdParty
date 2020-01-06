@@ -76,6 +76,25 @@ export default {
     },
     setting: {
         settings: 'Settings'
+    },
+    tab: {
+        uploadQuestion: 'Upload Question',
+        manualInput: 'Manual Input',
+        question: 'Questions',
+        answer: 'Answers',
+        versionSetting: 'Version Setting',
+        dataInit: 'Data Reset',
+        selectFile: 'select file',
+        upload: 'Upload',
+        downloadExampleQuestion: 'Download Example Questions',
+        questionType: 'Question Type',
+        selectQuestionType: 'select quesion type',
+        selectVersion: 'select version',
+        query: 'Query',
+        deleteQuestion: 'Delete Question',
+        version: 'Version',
+        init: 'Init',
+        inputAdminPass: 'input admin password'
     }
 
 }

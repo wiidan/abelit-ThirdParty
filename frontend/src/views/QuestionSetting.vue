@@ -1,21 +1,21 @@
 <template>
   <v-container>
     <v-tabs background-color="#036f90" center-active dark>
-      <v-tab @click="type = 1" class="title">上传题库</v-tab>
-      <v-tab @click="type = 2" class="title">手动填写</v-tab>
-      <v-tab @click="type = 3; tableHeaders=[]; tabledata=[]; qtype=''" class="title">题库</v-tab>
-      <v-tab @click="type = 4; tableHeaders=[]; tabledata=[]; qtype=''" class="title">答案</v-tab>
-      <v-tab @click="type = 5" class="title">版本设置</v-tab>
-      <v-tab @click="type = 6" class="title">数据初始化</v-tab>
+      <v-tab @click="type = 1" class="title">{{$vuetify.lang.t('$vuetify.tab.uploadQuestion')}}</v-tab>
+      <v-tab @click="type = 2" class="title">{{$vuetify.lang.t('$vuetify.tab.manualInput')}}</v-tab>
+      <v-tab @click="type = 3; tableHeaders=[]; tabledata=[]; qtype=''" class="title">{{$vuetify.lang.t('$vuetify.tab.question')}}</v-tab>
+      <v-tab @click="type = 4; tableHeaders=[]; tabledata=[]; qtype=''" class="title">{{$vuetify.lang.t('$vuetify.tab.answer')}}</v-tab>
+      <v-tab @click="type = 5" class="title">{{$vuetify.lang.t('$vuetify.tab.versionSetting')}}</v-tab>
+      <v-tab @click="type = 6" class="title">{{$vuetify.lang.t('$vuetify.tab.dataInit')}}</v-tab>
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
       <v-row justify="center">
         <v-col cols="12" sm="6">
           <v-row class="px-10">
-            <v-subheader>上传题库</v-subheader>
-            <v-file-input v-model="file" label="选择文件" :show-size="1000" outlined dense></v-file-input>
-            <v-btn color="#036f90" dark @click="uploadFile" class="ml-3">上传</v-btn>
-            <v-btn color="#036f90" dark @click="downloadExampleFile" class="ml-3">下载题库设计样本</v-btn>
+            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.uploadQuestion')}}</v-subheader>
+            <v-file-input v-model="file" :label="$vuetify.lang.t('$vuetify.tab.selectFile')" :show-size="1000" outlined dense></v-file-input>
+            <v-btn color="#036f90" dark @click="uploadFile" class="ml-3">{{$vuetify.lang.t('$vuetify.tab.upload')}}</v-btn>
+            <v-btn color="#036f90" dark @click="downloadExampleFile" class="ml-3">{{$vuetify.lang.t('$vuetify.tab.downloadExampleQuestion')}}</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -28,13 +28,13 @@
       <v-row>
         <v-col cols="4" sm="3">
           <v-row>
-            <v-subheader>题目类型</v-subheader>
+            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.questionType')}}</v-subheader>
             <v-select
               :items="questionTypes"
               v-model="qtype"
               item-value="id"
               item-text="name"
-              label="选题题型"
+              :label="$vuetify.lang.t('$vuetify.tab.selectQuestionType')"
               outlined
               dense
               @change="getQuestionVersion"
@@ -43,25 +43,25 @@
         </v-col>
         <v-col cols="6" sm="4">
           <v-row>
-            <v-subheader>题库版本</v-subheader>
+            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.version')}}</v-subheader>
             <v-select
               :items="questionVersions"
               v-model="qversion"
               item-value="version"
               item-text="version"
-              label="选择版本号"
+              :label="$vuetify.lang.t('$vuetify.tab.selectVersion')"
               outlined
               dense
             ></v-select>
-            <v-btn color="#036f90" dark @click="getQuestion" class="ml-3">查询</v-btn>
-            <v-btn color="error" dark @click="deleteDialog = true" class="ml-3">删除题库</v-btn>
+            <v-btn color="#036f90" dark @click="getQuestion" class="ml-3">{{$vuetify.lang.t('$vuetify.tab.query')}}</v-btn>
+            <v-btn color="error" dark @click="deleteDialog = true" class="ml-3">{{$vuetify.lang.t('$vuetify.tab.deleteQuestion')}}</v-btn>
             <v-dialog v-model="deleteDialog" max-width="500">
               <v-card justify="center" align="center">
                 <v-card-text class="pt-8 title">你确定删除吗</v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-1" text @click="deleteDialog = false">取消</v-btn>
-                  <v-btn color="green darken-1" text @click="deleteQuestion">确定</v-btn>
+                  <v-btn color="green darken-1" text @click="deleteDialog = false">{{$vuetify.lang.t('$vuetify.button.cancel')}}</v-btn>
+                  <v-btn color="green darken-1" text @click="deleteQuestion">{{$vuetify.lang.t('$vuetify.button.confirm')}}</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -84,17 +84,17 @@
       <v-row>
         <v-col cols="12" sm="6">
           <v-row>
-            <v-subheader>版本</v-subheader>
+            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.version')}}</v-subheader>
             <v-select
               :items="answerVersions"
               v-model="aversion"
               item-value="version"
               item-text="version"
-              label="选择版本号"
+              :label="$vuetify.lang.t('$vuetify.tab.selectVersion')"
               outlined
               dense
             ></v-select>
-            <v-btn class="ml-3" color="#036f90" dark @click="getParticipant">查询</v-btn>
+            <v-btn class="ml-3" color="#036f90" dark @click="getParticipant">{{$vuetify.lang.t('$vuetify.tab.query')}}</v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -231,7 +231,7 @@
         <v-col cols="12" sm="4">
           <v-text-field
             v-model="adminpwd"
-            label="请输入管理员密码"
+            :label="$vuetify.lang.t('$vuetify.tab.inputAdminPass')"
             type="password"
             prepend-inner-icon="lock"
             outlined
@@ -241,8 +241,8 @@
             flat
           >
             <template v-slot:append-outer>
-              <v-btn outlined height="41" dense color="amber" @click.stop="initdbDialog = true">
-                <span>初始化</span>
+              <v-btn height="41" dense color="error" dark @click.stop="initdbDialog = true">
+                <span>{{$vuetify.lang.t('$vuetify.tab.init')}}</span>
               </v-btn>
               <v-dialog v-model="initdbDialog" max-width="500">
                 <v-card>
@@ -255,9 +255,9 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
 
-                    <v-btn color="green darken-1" text @click="initdbDialog = false">取消</v-btn>
+                    <v-btn color="green darken-1"  @click="initdbDialog = false">{{$vuetify.lang.t('$vuetify.button.cancel')}}</v-btn>
 
-                    <v-btn color="green darken-1" text @click="initdb">确定</v-btn>
+                    <v-btn color="green darken-1"  @click="initdb">{{$vuetify.lang.t('$vuetify.button.confirm')}}</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
