@@ -86,7 +86,7 @@ export default {
         dataInit: '数据初始化',
         selectFile: '选择文件',
         upload: '上传',
-        downloadExampleQuestion: '下载',
+        downloadExampleQuestion: '下载题库设计样例',
         questionType: '问题类型',
         selectQuestionType: '选择题型',
         selectVersion: '选择版本',

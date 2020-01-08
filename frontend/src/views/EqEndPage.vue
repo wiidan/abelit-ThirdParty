@@ -7,6 +7,7 @@
           <v-card-text
             class="display-1 pa-12 light-green lighten-2"
             style="margin-top: 100px;width: 500px;"
+            disabled
             @click="saveAnswer"
           >
             <!-- {{ eqLangLabels[$vuetify.lang.current].T11 }} -->
@@ -22,6 +23,11 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-snackbar v-model="snackbar">数据已经成功入库！</v-snackbar>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -29,11 +35,17 @@
 import { mapState } from "vuex";
 export default {
   data: () => ({
-    isCircle: false
+    isCircle: false,
+    isSave: false,
+    snackbar: false
   }),
   methods: {
     saveAnswer() {
       console.log(this.allAnswer);
+      if (this.isSave) {
+        alert("数据已经提交入库！");
+        return fasle;
+      }
       var url = "";
       if (this.allAnswer[0].questionid == 1) {
         url = "/api/answer/dce/addall";
@@ -51,11 +63,14 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.isCircle = true;
+            this.snackbar = true;
             setTimeout(() => {
               this.isCircle = false;
+              this.snackbar = false;
               this.$router.push({ path: "/" });
             }, 5000);
           }
+          this.isSave = true;
         })
         .catch(err => {
           console.log(err);
