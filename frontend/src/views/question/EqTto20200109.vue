@@ -1,12 +1,10 @@
 <template>
-  <div class="grey lighten-5" style="width:1440px; margin:auto">
+  <v-container class="grey lighten-5" fluid>
     <v-card justify="center" align="start">
       <v-card-title v-show="true">
         <v-row>
           <v-col>
-            <v-alert dense type="info">{{
-              eqLangLabels[$vuetify.lang.current].question
-            }}</v-alert>
+            <v-alert dense type="info">{{ eqLangLabels[$vuetify.lang.current].question }}</v-alert>
             <!-- {{newBlock.split("*")}} -->
           </v-col>
         </v-row>
@@ -16,40 +14,25 @@
         <span color="grey">本题用时： {{itemUsedTime}}</span>-->
       </v-card-title>
       <!-- <v-divider></v-divider> -->
-
       <v-card-text>
         <v-row>
           <v-col cols="3" class="px-8">
-            <v-row justify="end">
-              <v-col>
-                <v-row justify="center" class="pt-8">
-                  <v-btn class="black" @click="chooseAnswer('A')" fab dark
-                    >A</v-btn
-                  >
-                </v-row>
-                <v-row justify="center" class="my-6">
-                  <v-btn
-                    class="black darken-3"
-                    @click="chooseAnswer('AB')"
-                    large
-                    dark
-                    >A & B</v-btn
-                  >
-                </v-row>
-                <v-row justify="center" class="my-2" style="margin-top:10px">
-                  <v-btn class="black" @click="chooseAnswer('B')" fab dark
-                    >B</v-btn
-                  >
-                </v-row>
-                <v-row justify="center" class="my-2">
-                  <v-btn class="black" dark v-if="step > 0" @click="reset">
-                    <v-icon>refresh</v-icon>
-                  </v-btn>
-                </v-row>
-              </v-col>
+            <v-row justify="end" class="pt-8">
+              <v-btn class="primary" @click="chooseAnswer('A')" fab large dark>A</v-btn>
+            </v-row>
+            <v-row justify="end" class="my-2">
+              <v-btn class="yellow darken-3" @click="chooseAnswer('AB')" large dark>A & B</v-btn>
+            </v-row>
+            <v-row justify="end" class="my-2">
+              <v-btn class="purple" @click="chooseAnswer('B')" fab large dark>B</v-btn>
+            </v-row>
+            <v-row justify="end" class="my-2">
+              <v-btn class="teal" v-if="step>0" @click="reset">
+                <v-icon>refresh</v-icon>
+              </v-btn>
             </v-row>
           </v-col>
-          <v-col cols="9" class="px-8" v-if="slide == 1">
+          <v-col cols="9" class="px-8" v-if="slide==1">
             <!-- <v-row v-if="showDetail" justify="start">
               <span class="display-0">当前SLIDE： {{ slide }}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -76,31 +59,8 @@
               >当前题目： {{ block.name }}</span>
             </v-row>-->
             <v-row justify="start" align="center">
-              <div style="position: relative;">
-                <div
-                  style="position: absolute;right:0px; z-index:99; top:-30px;"
-                >
-                  <div
-                    style="background:#92d050;padding:10px 10px;width:200px;border-radius: 15px"
-                  >
-                    完全健康
-                  </div>
-                </div>
-                <v-icon
-                  style="color:#92d050;font-size:5rem; position: absolute;right:120px; z-index:98; top:-25px;"
-                  >mdi-menu-down</v-icon
-                >
-                <div :style="cStyle1" style="text-align: center">
-                  {{
-                    Math.floor(currentYear) +
-                      eqLangLabels[$vuetify.lang.current].years +
-                      ((currentYear % 1) * 12 != 0
-                        ? "," +
-                          (currentYear % 1) * 12 +
-                          eqLangLabels[$vuetify.lang.current].months
-                        : "")
-                  }}
-                </div>
+              <div>
+                <div :style="cStyle1" style="text-align: center">{{Math.floor(currentYear) + eqLangLabels[$vuetify.lang.current].years + (((currentYear%1)*12 != 0)?(',' + (currentYear%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }} </div>
                 <canvas id="canvas1" ref="canvas1"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table1">
@@ -109,9 +69,7 @@
                     v-for="item in allContent(topYear)"
                     :key="item"
                     style="text-align: center; width: 24px"
-                    :class="
-                      item <= 4 * currentYear ? 'light-green lighten-1' : ''
-                    "
+                    :class="item<=4*currentYear?'light-green lighten-1':''"
                   ></td>
                 </tr>
               </table>
@@ -127,40 +85,15 @@
                   ></td>
                 </tr>
               </table>
-
               <div>
                 <canvas id="canvas2" ref="canvas2"></canvas>
               </div>
-              <div ref="tenyear" style="text-align: center;">10年</div>
             </v-row>
           </v-col>
-          <v-col cols="9" class="px-8" v-if="slide == 2">
+          <v-col cols="9" class="px-8" v-if="slide==2">
             <v-row justify="start">
-              <div style="position: relative">
-                <div
-                  style="position: absolute;right:0px; z-index:99; top:-30px;"
-                >
-                  <div
-                    style="background:#92d050;padding:10px 10px;width:200px;border-radius: 15px"
-                  >
-                    完全健康
-                  </div>
-                </div>
-                <v-icon
-                  style="color:#92d050;font-size:5rem; position: absolute;right:120px; z-index:98; top:-25px;"
-                  >mdi-menu-down</v-icon
-                >
-                <div :style="cStyle3" style="text-align: center">
-                  {{
-                    Math.floor(currentYearB) +
-                      eqLangLabels[$vuetify.lang.current].years +
-                      ((currentYearB % 1) * 12 != 0
-                        ? "," +
-                          (currentYearB % 1) * 12 +
-                          eqLangLabels[$vuetify.lang.current].months
-                        : "")
-                  }}
-                </div>
+              <div>
+                <div :style="cStyle3" style="text-align: center">{{Math.floor(currentYearB) + eqLangLabels[$vuetify.lang.current].years + (((currentYearB%1)*12 != 0)?(',' + (currentYearB%1)*12 + eqLangLabels[$vuetify.lang.current].months):'') }}</div>
                 <canvas id="canvas3" ref="canvas3"></canvas>
               </div>
               <table border="1" cellspacing="0" cellpadding="0" ref="table3">
@@ -169,9 +102,7 @@
                     v-for="item in allContent(topYearB)"
                     :key="item"
                     style="text-align: center; width: 16px"
-                    :class="
-                      item <= 4 * currentYearB ? 'light-green lighten-1' : ''
-                    "
+                    :class="item<=4*currentYearB?'light-green lighten-1':''"
                   ></td>
                 </tr>
               </table>
@@ -183,99 +114,53 @@
                     v-for="item in allContent(topYearB)"
                     :key="item"
                     style="text-align: center; width: 16px"
-                    :class="
-                      item <= 40 ? 'light-green lighten-1' : 'blue lighten-2'
-                    "
+                    :class="item<=40?'light-green lighten-1':'blue lighten-2'"
                   ></td>
                 </tr>
               </table>
-
               <div>
                 <canvas id="canvas4" ref="canvas4"></canvas>
                 <canvas id="canvas5" ref="canvas5"></canvas>
               </div>
-              <div style="width:100%" ref="tip_w">
-                <div
-                  ref="tenyear4"
-                  style="width:50%;text-align: center;float:left"
-                >
-                  10年完全健康
-                </div>
-                <div
-                  ref="tenyear5"
-                  style="width:50%;text-align: center;float:right"
-                >
-                  10年
-                </div>
-              </div>
             </v-row>
           </v-col>
         </v-row>
-        <v-row
-          justify="center"
-          align="center"
-          v-if="slide == 1 && block.source_text"
-        >
+        <v-row justify="center" align="center" v-if="slide==1 &&  block.source_text ">
           <v-col cols="6">
             <v-row>
-              <div style="position: relative;height:180px;">
-                <v-icon
-                  style="color:#5b9bd5;font-size:5rem; position: absolute;left:250px; z-index:98; top:-45px;"
-                  >mdi-menu-up</v-icon
-                >
-                <div style="">
-                  <div
-                    style="background:#5b9bd5;padding:10px 10px;width:400px;border-radius: 15px;height:180px"
-                  >
-                    <div
-                      v-for="msg in block.source_text.split('*')"
-                      :key="msg.key"
-                    >
-                      <li v-if="msg != ''">
-                        <span>{{ msg }}</span>
-                      </li>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </v-row>
-          </v-col>
-        </v-row>
-        <div v-if="slide == 2" ref="infotip" style="height:180px">
-          <div style="float:left;position: absolute;left:450px">
-            <v-row style="position: relative;">
-              <v-icon
-                style="color:#92d050;font-size:5rem; position: absolute;left:250px; z-index:98; top:-45px;"
-                >mdi-menu-up</v-icon
-              >
-
-              <div
-                style="background:#92d050;padding:10px 10px;width:400px;border-radius: 15px;height:180px"
-              >
-                完全健康
-              </div>
-            </v-row>
-          </div>
-          <div style="float:right; position: absolute;right:100px">
-            <v-row style="position: relative;" >
-              <v-icon
-                style="color:#5b9bd5;font-size:5rem; position: absolute;left:250px; z-index:98; top:-45px;"
-                >mdi-menu-up</v-icon
-              >
-
-              <div
-                style="background:#5b9bd5;padding:10px 10px;width:400px;border-radius: 15px;height:180px"
-              >
-                <div v-for="msg in block.source_text.split('*')" :key="msg.key">
+              <div class="message-box pa-5 mt-5" style="margin-left: 200px; text-align: left">
+                <div v-for="msg in  block.source_text.split('*')" :key="msg.key">
                   <li v-if="msg != ''">
-                    <span>{{ msg }}</span>
+                    <span>{{msg}}</span>
                   </li>
                 </div>
               </div>
             </v-row>
-          </div>
-        </div>
-        <v-row justify="center" align="center"> </v-row>
+          </v-col>
+        </v-row>
+
+        <v-row justify="center" align="center" v-if="slide==2">
+          <v-col cols="6">
+            <v-row>
+              <div class="message-box-1 pa-5 mt-5" style="margin-left: 200px;text-align:left">
+                <span>完全健康</span>
+              </div>
+            </v-row>
+          </v-col>
+        </v-row>
+        <v-row justify="center" align="center" v-if="slide==2 &&  block.source_text">
+          <v-col cols="6">
+            <v-row>
+              <div class="message-box-2 pa-5 mt-5" style="margin-left: 200px;text-align:left">
+                <div v-for="msg in block.source_text.split('*')" :key="msg.key">
+                  <li v-if="msg != ''">
+                    <span>{{msg}}</span>
+                  </li>
+                </div>
+              </div>
+            </v-row>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <!-- <v-card-text v-if="slide === 2">
@@ -323,41 +208,29 @@
       <v-dialog v-model="popupDialog" persistent max-width="600">
         <v-card class="pt-5 yellow lighten-4">
           <v-card-text class="display-1" style="text-indent:2em;">
-            <span v-if="popA">
-              {{
-                eqLangLabels[$vuetify.lang.current].msg_response_41 +
-                  currentYear +
-                  eqLangLabels[$vuetify.lang.current].msg_response_42
-              }}
-            </span>
-            <span v-if="popA_to_B">{{
-              eqLangLabels[$vuetify.lang.current].popup_window
-            }}</span>
-            <span v-if="popAZero">{{
-              eqLangLabels[$vuetify.lang.current].msg_response_43
-            }}</span>
-            <span v-if="popBFull">{{
-              eqLangLabels[$vuetify.lang.current].msg_response_53
-            }}</span>
-            <span v-if="popB">
-              {{
-                eqLangLabels[$vuetify.lang.current].msg_response_51 +
-                  currentBYear +
-                  eqLangLabels[$vuetify.lang.current].msg_response_52
-              }}
-            </span>
+            <span
+              v-if="popA"
+            >{{ eqLangLabels[$vuetify.lang.current].msg_response_41 + currentYear + eqLangLabels[$vuetify.lang.current].msg_response_42}}</span>
+            <span v-if="popA_to_B">{{ eqLangLabels[$vuetify.lang.current].popup_window }}</span>
+            <span v-if="popAZero">{{ eqLangLabels[$vuetify.lang.current].msg_response_43 }}</span>
+            <span v-if="popBFull">{{ eqLangLabels[$vuetify.lang.current].msg_response_53 }}</span>
+            <span
+              v-if="popB"
+            >{{ eqLangLabels[$vuetify.lang.current].msg_response_51 + currentBYear + eqLangLabels[$vuetify.lang.current].msg_response_52}}</span>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="light-green darken-3" @click="closeDialog" large>{{
-              eqLangLabels[$vuetify.lang.current].btn_ok_exmple
-            }}</v-btn>
+            <v-btn
+              color="light-green darken-3"
+              @click="closeDialog"
+              large
+            >{{ eqLangLabels[$vuetify.lang.current].btn_ok_exmple }}</v-btn>
             <v-spacer></v-spacer>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -678,8 +551,7 @@ export default {
             this.currentYear
           );
 
-          console.log(this.cStyle1);
-
+          console.log(this.cStyle1)
           this.drawLine(
             "canvas2",
             this.$refs.table2.offsetWidth,
@@ -824,9 +696,9 @@ export default {
       var width = w;
       var paddingRight = w - (w / ty) * cy;
       if (width == paddingRight) {
-        paddingRight = paddingRight - 30;
+        paddingRight = paddingRight-30
       }
-      console.log;
+      console.log
       return (
         "width: " + width + "px; " + "padding-right: " + paddingRight + "px;"
       );
@@ -876,13 +748,6 @@ export default {
       10,
       0
     );
-    this.$refs.tenyear.style.width = this.$refs.table2.offsetWidth + "px";
-   // this.$refs.infotip.style.width = this.$refs.tip_w.offsetWidth + "px";
-    
-
-    //document.getElementById("tenyear").style.width="500px";
-
-    // console.log(this.$refs.table2.offsetWidth);
     // console.log(this.$refs.table1.getBoundingClientRect());
     // console.log("EqTto ....");
 
@@ -908,6 +773,7 @@ export default {
   }
 };
 </script>
+
 
 <style lang="scss" scoped>
 .message-box {
@@ -978,8 +844,5 @@ export default {
   border-right: 10px solid transparent;
   border-bottom: 30px solid #74a1e0;
   border-left: 120px solid transparent;
-}
-* {
-  font-size: 1.2rem;
 }
 </style>
