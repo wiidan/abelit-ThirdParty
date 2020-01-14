@@ -4,9 +4,9 @@
       <v-card-title v-show="true">
         <v-row>
           <v-col>
-            <v-alert dense type="info">
-              {{ eqLangLabels[$vuetify.lang.current].question }}
-            </v-alert>
+            <v-alert dense type="info">{{
+              eqLangLabels[$vuetify.lang.current].question
+            }}</v-alert>
             <!-- {{newBlock.split("*")}} -->
           </v-col>
         </v-row>
@@ -223,7 +223,7 @@
                   style="color:#5b9bd5;font-size:5rem; position: absolute;left:250px; z-index:98; top:-45px;"
                   >mdi-menu-up</v-icon
                 >
-                <div style>
+                <div style="">
                   <div
                     style="background:#5b9bd5;padding:10px 10px;width:400px;border-radius: 15px;height:180px"
                   >
@@ -257,7 +257,7 @@
             </v-row>
           </div>
           <div style="float:right; position: absolute;right:100px">
-            <v-row style="position: relative;">
+            <v-row style="position: relative;" >
               <v-icon
                 style="color:#5b9bd5;font-size:5rem; position: absolute;left:250px; z-index:98; top:-45px;"
                 >mdi-menu-up</v-icon
@@ -275,7 +275,7 @@
             </v-row>
           </div>
         </div>
-        <v-row justify="center" align="center"></v-row>
+        <v-row justify="center" align="center"> </v-row>
       </v-card-text>
 
       <!-- <v-card-text v-if="slide === 2">
@@ -323,7 +323,7 @@
       <v-dialog v-model="popupDialog" persistent max-width="600">
         <v-card class="pt-5 yellow lighten-4">
           <v-card-text class="display-1" style="text-indent:2em;">
-            <!-- <span v-if="popA">
+            <span v-if="popA">
               {{
                 eqLangLabels[$vuetify.lang.current].msg_response_41 +
                   currentYear +
@@ -345,24 +345,14 @@
                   currentBYear +
                   eqLangLabels[$vuetify.lang.current].msg_response_52
               }}
-            </span>-->
-            {{ popMsg }}
+            </span>
           </v-card-text>
-          <v-card-actions v-if="!popAB">
+          <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="light-green darken-3" @click="closeDialog" large>
-              {{ eqLangLabels[$vuetify.lang.current].btn_ok_exmple }}
-            </v-btn>
+            <v-btn color="light-green darken-3" @click="closeDialog" large>{{
+              eqLangLabels[$vuetify.lang.current].btn_ok_exmple
+            }}</v-btn>
             <v-spacer></v-spacer>
-          </v-card-actions>
-          <v-card-actions v-else>
-            <v-spacer></v-spacer>
-            <v-btn color="light-green darken-3" @click="popABYN('Y')" large
-              >是</v-btn
-            >
-            <v-btn color="light-green darken-3" @click="popABYN('N')" large
-              >否</v-btn
-            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -404,91 +394,11 @@ export default {
     popB: false,
     popA_to_B: false,
     popAZero: false,
-    popBFull: false,
-    popAB: false,
-    popMsg: ""
+    popBFull: false
     // newBlock: ""
   }),
 
   methods: {
-    popABYN(value) {
-      if (value == "Y") {
-        var ttoValue = 0;
-        if (this.stepDirection % 2 == 0) {
-          ttoValue = this.currentYear * 0.1;
-        } else {
-          ttoValue = (this.currentYearB - 10) * 0.1;
-        }
-        var answerObj = {
-          questionid: this.examType.id,
-          participant: this.userInfo.participant,
-          interviewer: this.userInfo.interviewer,
-          item: this.block.name,
-          position_of_item: this.block.id,
-          tto_value: ttoValue,
-          used_time: this.itemUsedTime,
-          composite_switches: this.stepDirection,
-          resets: this.resets,
-          number_of_moves: this.step,
-          block: this.block.block,
-          version: this.qVersion
-        };
-        this.ttoAnswer = answerObj;
-
-        // console.log("本题用时：" + this.itemUsedTime);
-        this.itemStartTime = new Date();
-        this.itemEndTime = 0;
-        this.itemUsedTime = "00:00:00";
-        this.getUsedTime();
-        // this.reset();
-        // //通过改变父组件的值
-        this.updateItem();
-        this.popupDialog = false;
-      } else {
-        this.popupDialog = false;
-      }
-    },
-    popMsgR() {
-      if (this.stepDirection % 2 == 0) {
-        if (this.currentYear == 0) {
-          this.popMsg = this.eqLangLabels[
-            this.$vuetify.lang.current
-          ].msg_response_43;
-          // alert(
-          //   this.eqLangLabels[this.$vuetify.lang.current].msg_response_43
-          // );
-        } else {
-          this.popMsg =
-            this.eqLangLabels[this.$vuetify.lang.current].msg_response_41 +
-            (10 - this.currentYear) +
-            this.eqLangLabels[this.$vuetify.lang.current].msg_response_42;
-          // alert(
-          //   this.eqLangLabels[this.$vuetify.lang.current].msg_response_41 +
-          //     (10 - this.currentYear) +
-          //     this.eqLangLabels[this.$vuetify.lang.current].msg_response_42
-          // );
-        }
-      } else {
-        if (this.currentYearB == 0) {
-          this.popMsg = this.eqLangLabels[
-            this.$vuetify.lang.current
-          ].msg_response_53;
-          // alert(
-          //   this.eqLangLabels[this.$vuetify.lang.current].msg_response_53
-          // );
-        } else {
-          this.popMsg =
-            this.eqLangLabels[this.$vuetify.lang.current].msg_response_51 +
-            (20 - this.currentYearB) +
-            this.eqLangLabels[this.$vuetify.lang.current].msg_response_52;
-          // alert(
-          //   this.eqLangLabels[this.$vuetify.lang.current].msg_response_51 +
-          //     (20 - this.currentYearB) +
-          //     this.eqLangLabels[this.$vuetify.lang.current].msg_response_52
-          // );
-        }
-      }
-    },
     reset() {
       this.resets++;
       this.slide = 1;
@@ -549,7 +459,6 @@ export default {
             this.currentYear = this.currentYear - 10;
           } else if (this.step === 1) {
             // alert(this.bAlertText);
-            this.popMsgR();
             this.popA_to_B = true;
             this.popupDialog = true;
             this.slide = 2;
@@ -684,11 +593,63 @@ export default {
           }
         }
       } else {
-        this.popMsgR();
-        this.popAB = true;
-        this.popupDialog = true;
-      }
+        if (this.stepDirection % 2 == 0) {
+          if (this.currentYear == 0) {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_43
+            );
+          } else {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_41 +
+                (10 - this.currentYear) +
+                this.eqLangLabels[this.$vuetify.lang.current].msg_response_42
+            );
+          }
+        } else {
+          if (this.currentYearB == 0) {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_53
+            );
+          } else {
+            alert(
+              this.eqLangLabels[this.$vuetify.lang.current].msg_response_51 +
+                (20 - this.currentYearB) +
+                this.eqLangLabels[this.$vuetify.lang.current].msg_response_52
+            );
+          }
+        }
 
+        var ttoValue = 0;
+        if (this.stepDirection % 2 == 0) {
+          ttoValue = this.currentYear * 0.1;
+        } else {
+          ttoValue = (this.currentYearB - 10) * 0.1;
+        }
+        var answerObj = {
+          questionid: this.examType.id,
+          participant: this.userInfo.participant,
+          interviewer: this.userInfo.interviewer,
+          item: this.block.name,
+          position_of_item: this.block.id,
+          tto_value: ttoValue,
+          used_time: this.itemUsedTime,
+          composite_switches: this.stepDirection,
+          resets: this.resets,
+          number_of_moves: this.step,
+          block: this.block.block,
+          version: this.qVersion
+        };
+        this.ttoAnswer = answerObj;
+
+        // console.log("本题用时：" + this.itemUsedTime);
+        this.itemStartTime = new Date();
+        this.itemEndTime = 0;
+        this.itemUsedTime = "00:00:00";
+        this.getUsedTime();
+        // this.reset();
+        //通过改变父组件的值
+        this.updateItem();
+      }
       this.selected.push(type);
       this.step++;
       if (this.slide === 2) {
@@ -916,7 +877,8 @@ export default {
       0
     );
     this.$refs.tenyear.style.width = this.$refs.table2.offsetWidth + "px";
-    // this.$refs.infotip.style.width = this.$refs.tip_w.offsetWidth + "px";
+   // this.$refs.infotip.style.width = this.$refs.tip_w.offsetWidth + "px";
+    
 
     //document.getElementById("tenyear").style.width="500px";
 
