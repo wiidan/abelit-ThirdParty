@@ -453,6 +453,7 @@ def add_tto_answer():
 @app.route("/api/answer/tto")
 def get_tto_answer():
     version = request.args.get('version')
+    participant = request.args.get('participant')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
@@ -462,6 +463,15 @@ def get_tto_answer():
 
     if version is not None and version != "all":
         SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
+    if participant is not None:
+        if participant != "all":
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where  participant='{0}'".format(participant)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "and  participant='{0}'".format(participant)
 
     result = cursor.execute(SQL_TEXT)
     data = []
@@ -568,6 +578,7 @@ def add_open_answer():
 @app.route("/api/answer/open")
 def get_open_answer():
     version = request.args.get('version')
+    participant = request.args.get('participant')
     # 连接数据库
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
@@ -577,6 +588,15 @@ def get_open_answer():
 
     if version is not None and version != "all":
         SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
+
+    if participant is not None:
+        if participant != "all":
+            if re.search(r'select (.*) from (.*) where (.*)', SQL_TEXT.lower()) is None:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "where  participant='{0}'".format(participant)
+            else:
+                SQL_TEXT = SQL_TEXT + " " + \
+                    "and  participant='{0}'".format(participant)
 
     result = cursor.execute(SQL_TEXT)
     data = []
