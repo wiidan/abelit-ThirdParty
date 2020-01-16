@@ -14,7 +14,6 @@
         <v-card class="pt-5 yellow lighten-4">
           <v-card-text
             class="display-1"
-            style="text-indent:2em;"
           >{{ eqLangLabels[$vuetify.lang.current].popup_window_exmple }}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>

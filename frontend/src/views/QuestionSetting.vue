@@ -421,6 +421,8 @@ export default {
           console.log("I am getAnswer function.");
         })
         .catch(err => {
+          this.tableAData = [];
+          this.tableAHeaders = [];
           console.log(err);
         });
       // console.log(this.qtype);
