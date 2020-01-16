@@ -17,7 +17,7 @@
     </v-tabs>
     <div v-if="type==1" style="margin-top: 15%">
       <v-row justify="center">
-        <v-col cols="12" sm="6">
+        <v-col cols="12">
           <v-row class="px-10">
             <v-subheader>{{$vuetify.lang.t('$vuetify.tab.uploadQuestion')}}</v-subheader>
             <v-file-input
@@ -48,10 +48,10 @@
     </div>
 
     <div v-if="type==3">
-      <v-row>
-        <v-col cols="4" sm="3">
+      <v-row class="mx-1">
+        <v-col cols="12">
           <v-row>
-            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.questionType')}}</v-subheader>
+            <!-- <v-subheader>{{$vuetify.lang.t('$vuetify.tab.questionType')}}</v-subheader> -->
             <v-select
               :items="questionTypes"
               v-model="qtype"
@@ -62,11 +62,8 @@
               dense
               @change="getQuestionVersion"
             ></v-select>
-          </v-row>
-        </v-col>
-        <v-col cols="6" sm="4">
-          <v-row>
-            <v-subheader>{{$vuetify.lang.t('$vuetify.tab.version')}}</v-subheader>
+
+            <!-- <v-subheader>{{$vuetify.lang.t('$vuetify.tab.version')}}</v-subheader> -->
             <v-select
               :items="questionVersions"
               v-model="qversion"
@@ -123,7 +120,7 @@
 
     <div v-if="type==4">
       <v-row class="mx-1">
-        <v-col cols="12" >
+        <v-col cols="12">
           <v-row>
             <v-select
               :items="answerVersions"
@@ -276,7 +273,7 @@
     </div>
     <div v-if="type == 6">
       <v-row justify="center" class="mt-12">
-        <v-col cols="12" sm="4">
+        <v-col cols="12" sm="6">
           <v-text-field
             v-model="adminpwd"
             :label="$vuetify.lang.t('$vuetify.tab.inputAdminPass')"
@@ -487,7 +484,7 @@ export default {
 
       await this.$axios
         .get(url, {
-          params: { version: version, participant: participant}
+          params: { version: version, participant: participant }
         })
         .then(res => {
           //   console.log(res.data)
@@ -641,8 +638,8 @@ export default {
           questionName = "unkonwn";
       }
 
-      if (this.tableAData.length<1) {
-        alert(questionName+"题型还没有人答题！");
+      if (this.tableAData.length < 1) {
+        alert(questionName + "题型还没有人答题！");
         return;
       }
       answerTime = this.tableAData[0].created_timestamp;
@@ -666,29 +663,29 @@ export default {
       }
 
       if (pid) {
-      filename =
-        questionName +
-        "_" +
-        this.aversion +
-        "_" +
-        pid +
-        "_" +
-        syear.toString() +
-        smonth.toString() +
-        sdate.toString() +
-        shour.toString();
+        filename =
+          questionName +
+          "_" +
+          this.aversion +
+          "_" +
+          pid +
+          "_" +
+          syear.toString() +
+          smonth.toString() +
+          sdate.toString() +
+          shour.toString();
       } else {
         filename =
-        questionName +
-        "_" +
-        this.aversion +
-        "_" +
-        syear.toString() +
-        smonth.toString() +
-        sdate.toString();
+          questionName +
+          "_" +
+          this.aversion +
+          "_" +
+          syear.toString() +
+          smonth.toString() +
+          sdate.toString();
       }
       console.log(filename);
-      
+
       var exportData = XLSX.utils.json_to_sheet(this.tableAData);
       var wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, exportData, questionName + " Answer");
