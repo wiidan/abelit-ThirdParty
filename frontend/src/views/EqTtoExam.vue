@@ -75,7 +75,8 @@ export default {
           params: { block: this.userInfo.blockQuestion, version: this.qVersion }
         })
         .then(res => {
-          this.eqTtoQuestions = res.data;
+          this.eqTtoQuestions = res.data.sort(() => Math.random() - 0.5);
+          console.log(this.eqTtoQuestions)
           // this.currentItem = this.eqTtoQuestions[0].id;
           // console.log(this.eqTtoQuestions);
         })
