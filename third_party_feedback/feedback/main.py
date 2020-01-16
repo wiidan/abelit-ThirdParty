@@ -53,7 +53,7 @@ def init_db():
         conn.execute("drop table {0}".format(table[0]))
 
     # create tables
-    SQL_TEXT = ["create table interviewer(id integer, name text)",
+    SQL_TEXT = ["create table interviewer(id integer, name text,version text, created_timestamp timestamp default (datetime(current_timestamp, 'localtime')))",
                 "create table eq_question_version(id integer primary key autoincrement, version text, created_timestamp timestamp default (datetime(current_timestamp, 'localtime')))",
                 "create table eq_label(id integer primary key autoincrement,questionid integer, reference_id text,slide text,presentation text,en_source_text text,zh_source_text text,version text,created_timestamp timestamp default  current_timestamp)",
                 "create table tto_question(id integer primary key autoincrement,questionid integer, presentation text,type text, name text,block integer,source_text text,version text,created_timestamp timestamp default (datetime(current_timestamp, 'localtime')))",
@@ -70,10 +70,10 @@ def init_db():
 
     # Insert Data
     # interviewer Question
-    for data in readexcel.read('./data/questions.xlsx', 'interviewers', True):
-        cursor.execute(
-            "insert into interviewer(id, name) values({0},'{1}')".format(data[0], data[1]))
-    conn.commit()
+    # for data in readexcel.read('./data/questions.xlsx', 'interviewers', True):
+    #     cursor.execute(
+    #         "insert into interviewer(id, name,version) values({0},'{1}','{2}')".format(data[0], data[1],data[2]))
+    # conn.commit()
 
     # EQ Label
     for item in ["TTO", "TTO-Feedback", "DCE", "Open ended questions"]:
@@ -182,10 +182,15 @@ def add_question_version():
 
 @app.route("/api/interviewer")
 def get_interviewer():
+    version = request.args.get('version')
+
     conn = sqlite3.connect('question.db', check_same_thread=False)
     cursor = conn.cursor()
 
-    SQL_TEXT = "select id, name from interviewer"
+    SQL_TEXT = "select id, name,version,created_timestamp from interviewer"
+
+    if version is not None and version != "all":
+        SQL_TEXT = SQL_TEXT + " " + "where version='{0}'".format(version)
 
     result = cursor.execute(SQL_TEXT)
 
@@ -194,7 +199,9 @@ def get_interviewer():
     for row in result:
         data.append({
             "id": row[0],
-            "name": row[1]
+            "name": row[1],
+            "version": row[2],
+            "created_timestamp": row[3]
         })
 
     return jsonify(data)
@@ -704,6 +711,10 @@ def upload_file():
             status = ""
 
             try:
+                # Interviewers
+                for data in readexcel.read(filepath, 'interviewers', True):
+                    cursor.execute("insert into interviewer(id, name,version) values({0},'{1}','{2}')".format(data[0], data[1],data[2]))
+
                 # TTO
                 for data in readexcel.read(filepath, 'TTO & TTO-Feedback', True):
                     cursor.execute("insert into tto_question(questionid,presentation,type,name,block,source_text,version) values({0},'{1}','{2}','{3}','{4}','{5}','{6}')".format(
