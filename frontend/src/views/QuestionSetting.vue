@@ -121,8 +121,8 @@
       </v-row>
     </div>
 
-    <div v-if="type==4" class="mx-3">
-      <v-row>
+    <div v-if="type==4">
+      <v-row class="mx-1">
         <v-col cols="12" >
           <v-row>
             <v-select
