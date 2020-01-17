@@ -3,13 +3,13 @@
     <v-tabs background-color="#036f90" center-active dark>
       <v-tab @click="type = 1" class="title">{{$vuetify.lang.t('$vuetify.tab.uploadQuestion')}}</v-tab>
       <v-tab @click="type = 2" class="title">{{$vuetify.lang.t('$vuetify.tab.manualInput')}}</v-tab>
-      <v-tab @click="type = 0" class="title">{{$vuetify.lang.t('$vuetify.tab.interviewer')}}</v-tab>
+      <v-tab @click="type = 0; tablePHeaders=[]; tablePData=[]" class="title">{{$vuetify.lang.t('$vuetify.tab.interviewer')}}</v-tab>
       <v-tab
-        @click="type = 3; tableHeaders=[]; tabledata=[]; qtype=''"
+        @click="type = 3; tableHeaders=[]; tableData=[]; qtype=''"
         class="title"
       >{{$vuetify.lang.t('$vuetify.tab.question')}}</v-tab>
       <v-tab
-        @click="type = 4; tableHeaders=[]; tabledata=[]; qtype=''"
+        @click="type = 4; tablePHeaders=[]; tablePData=[]; qtype=''"
         class="title"
       >{{$vuetify.lang.t('$vuetify.tab.answer')}}</v-tab>
       <v-tab @click="type = 5" class="title">{{$vuetify.lang.t('$vuetify.tab.versionSetting')}}</v-tab>
@@ -463,6 +463,8 @@ export default {
         });
     },
     async getAnswer(type, version, participant) {
+      this.tableAData = [];
+      this.tableAHeaders = [];
       var url;
       console.log(type);
       switch (type) {
