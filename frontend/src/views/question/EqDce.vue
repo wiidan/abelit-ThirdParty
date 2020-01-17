@@ -182,10 +182,14 @@ export default {
             }
             arrTemp.push(obj);
           }
-          console.log(arrTemp);
-          this.dceQuestion = arrTemp;
+          // console.log(arrTemp);
+          this.dceQuestion = arrTemp.sort(() => Math.random() - 0.5);
           this.itemOrder = arrKey;
           this.name = this.dceQuestion[0].name;
+          console.log(this.dceQuestion);
+          // let marr = [1,2,3,4,5,6,7,8,9]
+          // marr.sort(() => Math.random() - 0.5); 
+          // console.log(marr)
         })
         .catch(error => {
           console.log(error);
